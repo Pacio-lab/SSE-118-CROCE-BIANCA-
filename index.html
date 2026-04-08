@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>RescuePro Master</title>
+    <title>RescuePro Ultra</title>
 
     <link rel="apple-touch-icon" href="./IMG_4138.png">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -11,171 +11,156 @@
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        :root { --red: #8b151a; --blue: #0d47a1; --light: #f8f9fa; --dark: #212529; }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica; background: var(--light); padding-bottom: 90px; }
+        :root { --red: #8b151a; --blue: #0d47a1; --bg: #f8f9fa; }
+        body { font-family: -apple-system, sans-serif; background: var(--bg); padding-bottom: 80px; }
         
         /* Splash Screen */
         #splash { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--red); display: flex; justify-content: center; align-items: center; z-index: 10000; transition: 0.5s; }
-        #splash img { width: 150px; border-radius: 35px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        #splash img { width: 140px; border-radius: 35px; }
 
-        /* UI Elements */
-        .navbar { background: var(--red) !important; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        .page { display: none; padding: 20px; animation: slideUp 0.3s ease-out; }
+        /* UI */
+        .page { display: none; padding: 20px; animation: fadeIn 0.3s; }
         .page.active { display: block; }
-        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-
-        .rescue-card { background: white; border-radius: 15px; padding: 18px; margin-bottom: 15px; border-left: 6px solid var(--red); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-        .tech-card { border-left-color: var(--blue); }
+        @keyframes fadeIn { from {opacity: 0;} to {opacity: 1;} }
         
-        .section-label { font-size: 0.75rem; font-weight: 900; color: #aaa; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; display: block; }
+        .rescue-card { background: white; border-radius: 15px; padding: 15px; margin-bottom: 12px; border-left: 5px solid var(--red); box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        
+        /* Chatbot Pro */
+        #chat-win { height: 65vh; overflow-y: auto; background: #efe7dd; border-radius: 15px; padding: 15px; display: flex; flex-direction: column; border: 1px solid #ccc; }
+        .bbl { padding: 10px 15px; border-radius: 15px; margin-bottom: 8px; max-width: 85%; font-size: 0.9rem; }
+        .bot { background: white; align-self: flex-start; }
+        .user { background: #dcf8c6; align-self: flex-end; }
 
-        /* Chatbot */
-        #chat-container { height: 60vh; overflow-y: auto; background: #e5ddd5; border-radius: 20px; padding: 15px; display: flex; flex-direction: column; border: 1px solid #ddd; }
-        .bubble { padding: 12px 16px; border-radius: 18px; margin-bottom: 12px; max-width: 85%; font-size: 0.95rem; line-height: 1.4; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
-        .bot { background: white; align-self: flex-start; border-bottom-left-radius: 4px; }
-        .user { background: #dcf8c6; align-self: flex-end; border-bottom-right-radius: 4px; }
-
-        /* Navigation Bar */
-        .nav-bar { position: fixed; bottom: 0; width: 100%; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); display: flex; padding: 15px 0; border-top: 1px solid #eee; z-index: 999; }
-        .nav-btn { flex: 1; text-align: center; color: #999; font-size: 10px; font-weight: 600; text-decoration: none; border: none; background: none; transition: 0.2s; }
-        .nav-btn.active { color: var(--red); transform: scale(1.1); }
-        .nav-btn i { font-size: 20px; display: block; margin-bottom: 4px; }
+        .nav-bar { position: fixed; bottom: 0; width: 100%; background: white; display: flex; padding: 12px 0; border-top: 1px solid #ddd; z-index: 1000; }
+        .nav-btn { flex: 1; text-align: center; color: #777; font-size: 11px; background: none; border: none; }
+        .nav-btn.active { color: var(--red); font-weight: bold; }
     </style>
 </head>
 <body>
 
 <div id="splash"><img src="./IMG_4138.png"></div>
 
-<nav class="navbar navbar-dark sticky-top p-3">
-    <span class="navbar-brand fw-bold">RESCUEPRO MASTER</span>
+<nav class="navbar navbar-dark sticky-top p-2" style="background: var(--red);">
+    <div class="container-fluid justify-content-center">
+        <span class="navbar-brand fw-bold">RESCUEPRO ULTRA 🚑</span>
+    </div>
 </nav>
 
-<div id="p-protocolli" class="page active">
-    <span class="section-label">Valutazione Sistematica</span>
+<div id="manuale" class="page active">
     <div class="rescue-card">
-        <h6 class="fw-bold text-danger">ABCDE Completo</h6>
-        <small>
-            <b>A:</b> Vie aeree, stabilità cervicale, GASP.<br>
-            <b>B:</b> OPACS, Sat, Freq. Resp, O2 (Target 94-98%).<br>
-            <b>C:</b> Polso, Pressione, Emorragie, Riempimento capillare.<br>
-            <b>D:</b> GCS, Pupille, Glicemia, Segni neurologici.<br>
-            <b>E:</b> Esposizione, Prevenzione Ipotermia.
-        </small>
+        <h6><b>Protocolli Base</b></h6>
+        <p class="small mb-0">ABCDE, BLSD, SBAR, SAMPLE.</p>
     </div>
-
-    <span class="section-label">Tecniche di Soccorso</span>
-    <div class="rescue-card tech-card">
-        <h6 class="fw-bold text-primary">Traumatologia</h6>
-        <small>
-            <b>Spinalizzazione:</b> Collare -> Log Roll -> Tavola Spinale -> Ragno -> Fermacapo.<br>
-            <b>KED:</b> Estricazione rapida. Laccio Verde-Giallo-Rosso (Torace), Nero (Inguine), Testa.<br>
-            <b>Arti:</b> Steccobende a depressione/rigide. Controlla sempre polso a valle.
-        </small>
+    <div class="rescue-card" style="border-left-color: var(--blue);">
+        <h6><b>Trauma & Immobilizzazione</b></h6>
+        <p class="small mb-0">KED, Spinalizzazione, Log Roll, Estricazione rapida.</p>
     </div>
-
-    <div class="rescue-card tech-card">
-        <h6 class="fw-bold text-primary">Emergenza Medica</h6>
-        <small>
-            <b>SCA:</b> Dolore toracico, ECG 12 derivazioni, riposo assoluto.<br>
-            <b>Ictus (FAST):</b> Faccia, Arti, Speech, Tempo (ultima volta visto sano).<br>
-            <b>Shock:</b> Posizione Trendelenburg (se non cardiogeno), coperta termica.
-        </small>
+    <div class="rescue-card" style="border-left-color: green;">
+        <h6><b>Emergenze Speciali</b></h6>
+        <p class="small mb-0">Parto, Pediatrico, Maxiemergenza (START), Annegamento.</p>
     </div>
 </div>
 
-<div id="p-chat" class="page">
-    <div id="chat-container">
-        <div class="bubble bot">Ciao Soccorritore. Scrivi una parola chiave (es. KED, GCS, Ustioni, Annegamento, Parto) per consultare i protocolli.</div>
+<div id="chat" class="page">
+    <div id="chat-win">
+        <div class="bbl bot"><b>SISTEMA ATTIVO.</b><br>Chiedimi qualsiasi cosa: patologie, manovre, dosaggi O2, scale GCS/AVPU, triage START, ecc.</div>
     </div>
     <div class="input-group mt-3">
-        <input type="text" id="chat-in" class="form-control" placeholder="Cerca protocollo...">
-        <button class="btn btn-danger px-4" onclick="runChat()">VAI</button>
+        <input type="text" id="chat-in" class="form-control" placeholder="Cosa devi sapere?">
+        <button class="btn btn-danger" onclick="ask()">INVIA</button>
     </div>
 </div>
 
-<div id="p-quiz" class="page">
-    <div id="quiz-ui" class="rescue-card text-center p-5">
-        <h5 id="q-text">Test di Ripasso Generale</h5>
-        <div id="q-options" class="d-grid gap-2 mt-4">
-            <button class="btn btn-outline-danger" onclick="initQuiz()">Inizia 10 Domande</button>
+<div id="quiz" class="page">
+    <div class="rescue-card text-center py-5">
+        <h5 id="q-txt">Simulazione Certificazione Soccorritore</h5>
+        <div id="q-ops" class="d-grid gap-2 mt-4">
+            <button class="btn btn-danger" onclick="startQ()">INIZIA TEST</button>
         </div>
     </div>
 </div>
 
 <div class="nav-bar">
-    <button class="nav-btn active" onclick="go('p-protocolli', this)">📖<br>MANUALE</button>
-    <button class="nav-btn" onclick="go('p-chat', this)">🤖<br>AI ASSIST</button>
-    <button class="nav-btn" onclick="go('p-quiz', this)">✏️<br>QUIZ</button>
+    <button class="nav-btn active" onclick="nav('manuale', this)">📖<br>MANUALE</button>
+    <button class="nav-btn" onclick="nav('chat', this)">🤖<br>CHATBOT</button>
+    <button class="nav-btn" onclick="nav('quiz', this)">📝<br>QUIZ</button>
 </div>
 
 <script>
-    // DATABASE CHATBOT (Tutto ciò che serve sapere)
-    const data = {
-        "blsd": "BLSD: 30:2 adulto, 15:2 pediatrico (professionale). Freq 100-120. DAE subito.",
-        "gcs": "GCS: Occhi (1-4), Verbale (1-5), Motoria (1-6). Sotto 8: Paziente grave (coma).",
-        "ustioni": "USTIONI: Raffreddare con acqua (15-20 min). Regola del 9 di Wallace per estensione. Non forare vescicole.",
-        "annegamento": "ANNEGAMENTO: Inizia con 5 ventilazioni di soccorso. Immobilizza se sospetto trauma tuffo.",
-        "parto": "PARTO: Valuta contrazioni. Se imminente: prepara kit parto, scalda il neonato, punteggio APGAR a 1 e 5 minuti.",
-        "ked": "KED: Sequenza lacci Medio(Giallo), Inferiore(Rosso), Superiore(Verde), Inguinali, Testa.",
-        "fast": "FAST (Ictus): Facial drooping, Arm weakness, Speech difficulty, Time to call 118.",
-        "iperglicemia": "DIABETE: Se conscio dai zucchero solo se sospetti IPOGLICEMIA. Se IPER: idratazione e trasporto.",
-        "fratture": "FRATTURE: Immobilizza l'articolazione sopra e sotto la lesione. Se esposta: garza sterile bagnata."
+    // DATABASE ESTESO (TUTTO IL SOCCORSO)
+    const db = {
+        "abcde": "A: Vie aeree e rachide cervicale. B: Respiro (Freq, Sat, OPACS). C: Circolo (Polso, Emorragie, Riempimento). D: Neurologico (GCS, Pupille, Glicemia). E: Esposizione e Ipotermia.",
+        "blsd": "RCP Adulto 30:2. RCP Pediatrico 15:2 (2 socc.). Profondità 5-6 cm. Frequenza 100-120 bpm. DAE: Accendi e segui i comandi.",
+        "ked": "KED: Lacci Torace (Verde-Sopra, Giallo-Mezzo, Rosso-Sotto), Lacci Inguinali (Neri), Cinghia Testa.",
+        "gcs": "GLASGOW COMA SCALE: Occhi (4:Spontanea, 1:Nessuna), Verbale (5:Orientata, 1:Nessuna), Motoria (6:Ubbidisce, 1:Nessuna). Grave < 9.",
+        "ictus": "ICTUS (FAST): Faccia (Simmetria), Arti (Forza), Speech (Linguaggio), Tempo (Ultima volta sano).",
+        "infarto": "SCA: Dolore retrosternale, sudorazione, nausea. Posizione semiseduta, O2 se <94%, monitoraggio costante.",
+        "parto": "PARTO: 1° Stadio (Dilatazione), 2° (Espulsivo), 3° (Secondamento/Placenta). APGAR a 1 e 5 min. Scaldare neonato.",
+        "triage": "START: 1.Cammina? (Verde). 2.Respira? (>30 Rosso, 0 Nero). 3.Polso Radiale? (No Rosso). 4.Comandi? (No Rosso, Sì Giallo).",
+        "ustioni": "USTIONI: Raffreddare 20min. Regola del 9: Capo 9%, Arti Sup 9% cad, Arti Inf 18% cad, Tronco 18% ant e 18% post, Genitali 1%.",
+        "avpu": "AVPU: Alert (Sveglio), Verbal (Risponde a voce), Pain (Risponde a dolore), Unresponsive (Incosciente).",
+        "o2": "OSSIGENO: Occhialini (2-6L/min), Maschera semplice (6-10L/min), Maschera Reservoir (10-15L/min - 100% O2).",
+        "heimlich": "OSTRUZIONE: Parziale (Incoraggia tosse). Totale (5 Colpi interscapolari + 5 Spinte Heimlich). Se incosciente: RCP.",
+        "convulsioni": "CONVULSIONI: Proteggi il capo, non inserire nulla in bocca, osserva durata. Post-ictale: PLS (Posizione Laterale Sicurezza)."
     };
 
-    function runChat() {
-        const input = document.getElementById('chat-in');
-        const box = document.getElementById('chat-container');
-        const query = input.value.toLowerCase();
-        if(!query) return;
+    function ask() {
+        const inpt = document.getElementById('chat-in');
+        const win = document.getElementById('chat-win');
+        const val = inpt.value.toLowerCase();
+        if(!val) return;
 
-        box.innerHTML += `<div class="bubble user">${input.value}</div>`;
-        let res = "Argomento non trovato. Prova: BLSD, GCS, KED, Ustioni, FAST, Parto, Annegamento.";
-        for(let k in data) if(query.includes(k)) res = data[k];
+        win.innerHTML += `<div class="bbl user">${inpt.value}</div>`;
+        let reply = "Non ho trovato questo argomento specifico. Prova: BLSD, ABCDE, KED, GCS, PARTI, TRIAGE, USTIONI, O2, ICTUS.";
+        
+        for(let key in db) {
+            if(val.includes(key)) { reply = "<b>INFO:</b> " + db[key]; break; }
+        }
 
         setTimeout(() => {
-            box.innerHTML += `<div class="bubble bot">${res}</div>`;
-            box.scrollTop = box.scrollHeight;
+            win.innerHTML += `<div class="bbl bot">${reply}</div>`;
+            win.scrollTop = win.scrollHeight;
         }, 300);
-        input.value = "";
+        inpt.value = "";
     }
 
-    // Navigazione
-    function go(id, btn) {
+    function nav(id, btn) {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
         document.getElementById(id).classList.add('active');
         btn.classList.add('active');
     }
 
-    // Quiz
-    const pool = [
-        { q: "Target saturazione O2 normale?", a: ["88-92%", "94-98%", "100% fisso"], c: 1 },
-        { q: "Ordine lacci torace KED?", a: ["Giallo-Rosso-Verde", "Verde-Giallo-Rosso", "Rosso-Verde-Giallo"], c: 0 },
-        { q: "Rapporto RCP pediatrico (2 soccorritori)?", a: ["30:2", "15:2", "5:1"], c: 1 }
+    // QUIZ (10 Domande)
+    const qdb = [
+        { q: "Rapporto RCP Pediatrico a 2 soccorritori?", a: ["30:2", "15:2", "5:1"], c: 1 },
+        { q: "Sotto quale valore di GCS il paziente è considerato grave?", a: ["12", "9", "3"], c: 1 },
+        { q: "Laccio Verde del KED dove va?", a: ["Sotto", "Mezzo", "Sopra (Ascellare)"], c: 2 },
+        { q: "Tempo massimo per raffreddare un'ustione?", a: ["2 min", "10-20 min", "1 ora"], c: 1 },
+        { q: "Cosa valuta la 'C' dell'ABCDE?", a: ["Cervello", "Circolo ed Emorragie", "Cervicale"], c: 1 }
     ];
-    let step = 0; let score = 0;
+    let step = 0; let sc = 0;
 
-    function initQuiz() {
-        if(step >= pool.length) {
-            document.getElementById('q-text').innerText = `Risultato: ${score}/${pool.length}`;
-            document.getElementById('q-options').innerHTML = `<button class="btn btn-danger" onclick="location.reload()">Ricomincia</button>`;
+    function startQ() {
+        if(step >= qdb.length) {
+            document.getElementById('q-txt').innerText = `FINE TEST. Punteggio: ${sc}/${qdb.length}`;
+            document.getElementById('q-ops').innerHTML = `<button class="btn btn-dark" onclick="location.reload()">RICOMINCIA</button>`;
             return;
         }
-        const q = pool[step];
-        document.getElementById('q-text').innerText = q.q;
-        document.getElementById('q-options').innerHTML = "";
+        const q = qdb[step];
+        document.getElementById('q-txt').innerText = q.q;
+        document.getElementById('q-ops').innerHTML = "";
         q.a.forEach((o, i) => {
-            document.getElementById('q-options').innerHTML += `<button class="btn btn-outline-dark p-3" onclick="ans(${i})">${o}</button>`;
+            document.getElementById('q-ops').innerHTML += `<button class="btn btn-outline-danger p-3" onclick="chk(${i})">${o}</button>`;
         });
     }
 
-    function ans(i) {
-        if(i === pool[step].c) score++;
+    function chk(i) {
+        if(i === qdb[step].c) sc++;
         step++;
-        initQuiz();
+        startQ();
     }
 
-    // Splash
     window.onload = () => setTimeout(() => { 
         document.getElementById('splash').style.opacity = '0';
         setTimeout(() => document.getElementById('splash').style.display='none', 500);

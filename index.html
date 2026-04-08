@@ -15,7 +15,7 @@
 
     <style>
         :root {
-            --primary-red: #8b151a; /* Rosso scuro come da tua immagine */
+            --primary-red: #8b151a; 
             --dark-blue: #2b2d42;
             --light-gray: #f8f9fa;
         }
@@ -28,11 +28,11 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* Schermata di avvio (Splash) */
+        /* Splash Screen (Logo centrato all'avvio) */
         #splash-screen {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background-color: #8b151a; /* Colore uniforme all'immagine */
+            background-color: #8b151a; 
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -59,8 +59,6 @@
             margin-bottom: 20px;
         }
 
-        .btn-danger { background-color: var(--primary-red); border: none; }
-
         .quiz-container { display: none; background: white; padding: 20px; border-radius: 15px; }
         .correct { color: #28a745; font-weight: bold; }
         .wrong { color: #dc3545; font-weight: bold; }
@@ -69,7 +67,7 @@
 <body>
 
 <div id="splash-screen">
-    <img src="IMG_4136.png" alt="Logo">
+    <img src="IMG_4138.png" alt="Logo RescuePro">
     <div class="spinner-border text-light mt-4" role="status"></div>
 </div>
 
@@ -77,7 +75,7 @@
     <nav class="navbar navbar-dark sticky-top">
         <div class="container">
             <a class="navbar-brand fw-bold" href="#">
-                <img src="IMG_4136.png" width="30" height="30" class="rounded me-2"> RESCUEPRO
+                <img src="IMG_4138.png" width="30" height="30" class="rounded me-2"> RESCUEPRO
             </a>
         </div>
     </nav>
@@ -91,13 +89,13 @@
             </div>
             <div class="card card-custom p-3">
                 <h5 class="text-danger fw-bold">ABCDE</h5>
-                <p class="small mb-0"><strong>A:</strong> Vie aeree libere<br><strong>B:</strong> Respiro (OPACS)<br><strong>C:</strong> Circolo (Emorragie/Polso)<br><strong>D:</strong> Deficit Neurologico (GCS/AVPU)<br><strong>E:</strong> Esposizione/Ambiente.</p>
+                <p class="small mb-0"><strong>A:</strong> Airways (Vie aeree)<br><strong>B:</strong> Breathing (Respiro)<br><strong>C:</strong> Circulation (Circolo/Emorragie)<br><strong>D:</strong> Disability (Stato neurologico)<br><strong>E:</strong> Exposure (Ambiente).</p>
             </div>
         </section>
 
         <section id="quiz-section" class="mt-4">
             <div id="quiz-intro" class="text-center">
-                <button class="btn btn-danger btn-lg w-100" onclick="startQuiz()">Inizia Simulazione Quiz</button>
+                <button class="btn btn-danger btn-lg w-100" onclick="startQuiz()">Inizia Quiz</button>
             </div>
 
             <div id="quiz-box" class="quiz-container shadow">
@@ -105,7 +103,7 @@
                     <small id="question-number"></small>
                     <small id="score-display"></small>
                 </div>
-                <h5 id="question-text" class="mb-4"></h5>
+                <h5 id="question-text" class="mb-4 text-center"></h5>
                 <div id="options-container" class="d-grid gap-2"></div>
             </div>
 
@@ -113,14 +111,14 @@
                 <h2 class="fw-bold">Risultato</h2>
                 <div id="final-score" class="display-3 fw-bold text-danger"></div>
                 <div id="feedback-list" class="text-start mt-4 small"></div>
-                <button class="btn btn-dark mt-4" onclick="location.reload()">Riprova</button>
+                <button class="btn btn-dark mt-4" onclick="location.reload()">Riprova Test</button>
             </div>
         </section>
     </div>
 </div>
 
 <script>
-    // Splash Screen Logic
+    // Logic per la Splash Screen
     window.addEventListener('load', () => {
         setTimeout(() => {
             document.getElementById('splash-screen').style.opacity = '0';
@@ -128,14 +126,15 @@
             setTimeout(() => {
                 document.getElementById('splash-screen').style.display = 'none';
             }, 600);
-        }, 2500);
+        }, 2000);
     });
 
-    // Quiz Logic
+    // Quiz Data & Logic
     const quizData = [
-        { q: "Ritmo delle compressioni nel BLSD?", options: ["60-80/min", "100-120/min", "Sopra i 150/min"], correct: 1, exp: "Le linee guida prevedono 100-120 compressioni al minuto." },
-        { q: "Cosa si valuta in 'B' nell'ABCDE?", options: ["Emi-lati", "Respiro", "Emorragie"], correct: 1, exp: "B sta per Breathing: si valuta la qualità del respiro." },
-        { q: "Posizionamento piastre DAE adulto?", options: ["Sotto clavicola dx / apice cuore sx", "Entrambe al centro", "Sulla schiena"], correct: 0, exp: "Posizione standard: Sotto clavicola destra e linea ascellare media sinistra." }
+        { q: "Qual è il rapporto compressioni/ventilazioni nel BLSD adulto?", options: ["15:2", "30:2", "30:5"], correct: 1, exp: "Rapporto universale 30:2." },
+        { q: "Cosa valuta la 'C' nell'ABCDE?", options: ["Coscienza", "Circolazione ed emorragie", "Cervello"], correct: 1, exp: "Si valuta il circolo, polso carotideo e controllo emorragie." },
+        { q: "Frequenza cardiaca nel massaggio adulto?", options: ["80-100 bpm", "100-120 bpm", "120-140 bpm"], correct: 1, exp: "La frequenza ottimale è tra 100 e 120 bpm." },
+        { q: "Manovra di Gaslini è usata per?", options: ["Ostruzione vie aeree", "Trauma cranico", "Disostruzione pediatrica"], correct: 2, exp: "È la manovra per la disostruzione delle vie aeree nel lattante/bambino." }
     ];
 
     let current = 0; let score = 0; let userAnswers = [];
@@ -165,10 +164,10 @@
         document.getElementById('quiz-box').style.display = 'none';
         document.getElementById('result-box').style.display = 'block';
         document.getElementById('final-score').innerText = `${score}/${quizData.length}`;
-        let feedback = "";
+        let feedback = "<h5>Riepilogo:</h5>";
         quizData.forEach((item, i) => {
             const ok = userAnswers[i] === item.correct;
-            feedback += `<div class='border-bottom mb-2 pb-2'><b>${i+1}. ${item.q}</b><br><span class='${ok?'correct':'wrong'}'>${ok?'Corretto':'Sbagliato'}</span>: ${item.options[item.correct]}<br><i class='text-muted'>${item.exp}</i></div>`;
+            feedback += `<div class='border-bottom mb-2 pb-2'><b>${i+1}. ${item.q}</b><br><span class='${ok?'correct':'wrong'}'>${ok?'✓':'✗'}</span> Tua: ${item.options[userAnswers[i]]} | Corr: ${item.options[item.correct]}<br><i class='text-muted small'>${item.exp}</i></div>`;
         });
         document.getElementById('feedback-list').innerHTML = feedback;
     }

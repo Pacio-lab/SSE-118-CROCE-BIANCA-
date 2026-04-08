@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>RescuePro v2.0</title>
+    <title>RescuePro Elite</title>
 
     <link rel="apple-touch-icon" href="./IMG_4138.png">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -11,167 +11,187 @@
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        :root { --primary-red: #8b151a; --medical-blue: #0056b3; }
-        body { font-family: -apple-system, system-ui; background-color: #f0f2f5; padding-bottom: 70px; }
+        :root { --red: #8b151a; --blue: #0a4d92; --bg: #f4f7f6; }
+        body { font-family: -apple-system, sans-serif; background: var(--bg); padding-bottom: 80px; overflow-x: hidden; }
         
         /* Splash Screen */
         #splash {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-color: #8b151a; display: flex; justify-content: center;
-            align-items: center; z-index: 10000; transition: opacity 0.5s;
+            background: var(--red); display: flex; justify-content: center;
+            align-items: center; z-index: 10000; transition: 0.5s;
         }
         #splash img { width: 140px; border-radius: 30px; }
 
-        /* Navigation Tab Bar (Stile iPhone) */
+        /* Navigation */
         .bottom-nav {
             position: fixed; bottom: 0; width: 100%; background: white;
-            display: flex; justify-content: space-around; padding: 10px 0;
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.1); z-index: 1000;
+            display: flex; justify-content: space-around; padding: 12px 0;
+            box-shadow: 0 -3px 15px rgba(0,0,0,0.1); z-index: 1000;
+            border-top-left-radius: 20px; border-top-right-radius: 20px;
         }
-        .nav-item { text-align: center; color: #666; text-decoration: none; font-size: 12px; cursor: pointer; }
-        .nav-item.active { color: var(--primary-red); font-weight: bold; }
+        .nav-item { text-align: center; color: #888; text-decoration: none; font-size: 11px; flex: 1; }
+        .nav-item.active { color: var(--red); font-weight: bold; }
 
-        /* Contenuto */
-        .page { display: none; padding: 15px; }
+        /* Pages & Cards */
+        .page { display: none; padding: 15px; animation: fadeIn 0.3s; }
         .page.active { display: block; }
-        .card { border: none; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .section-title { color: var(--primary-red); font-weight: bold; border-left: 4px solid var(--primary-red); padding-left: 10px; margin: 20px 0 15px; }
+        @keyframes fadeIn { from {opacity: 0;} to {opacity: 1;} }
+
+        .card-rescue {
+            background: white; border-radius: 15px; padding: 15px;
+            margin-bottom: 15px; border-left: 5px solid var(--red);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+        .section-header { font-weight: 800; color: var(--red); margin: 20px 0 10px; text-transform: uppercase; font-size: 0.9rem; }
 
         /* Chatbot UI */
-        #chat-box { height: 300px; overflow-y: auto; background: #e5ddd5; border-radius: 10px; padding: 10px; margin-bottom: 10px; }
-        .msg { margin-bottom: 10px; padding: 8px 12px; border-radius: 15px; max-width: 80% }
-        .msg.bot { background: white; align-self: flex-start; }
-        .msg.user { background: #dcf8c6; margin-left: auto; }
+        #chat-window { height: 60vh; overflow-y: auto; background: #efe7dd; border-radius: 15px; padding: 15px; display: flex; flex-direction: column; }
+        .bubble { padding: 10px 15px; border-radius: 18px; margin-bottom: 10px; max-width: 85%; font-size: 0.95rem; line-height: 1.4; }
+        .bot { background: white; align-self: flex-start; color: #333; border-bottom-left-radius: 2px; }
+        .user { background: #dcf8c6; align-self: flex-end; color: #333; border-bottom-right-radius: 2px; }
     </style>
 </head>
 <body>
 
 <div id="splash">
-    <img src="./IMG_4138.png" alt="RescuePro">
+    <img src="./IMG_4138.png" alt="Logo">
 </div>
 
-<nav class="navbar navbar-dark sticky-top p-3" style="background: var(--primary-red);">
-    <span class="navbar-brand fw-bold">RESCUEPRO</span>
+<nav class="navbar navbar-dark sticky-top p-3" style="background: var(--red); box-shadow: 0 2px 10px rgba(0,0,0,0.2);">
+    <span class="navbar-brand fw-bold">RESCUEPRO ELITE</span>
 </nav>
 
-<div id="teoria" class="page active">
-    <h5 class="section-title">ABCDE & BLSD</h5>
-    <div class="card p-3">
-        <h6><b>A - Airways</b></h6>
-        <p class="small text-muted">Controllo pervietà, rimozione corpi estranei, sublussazione mandibola (se sospetto trauma).</p>
+<div id="protocolli" class="page active">
+    <div class="section-header">Valutazione Primaria ABCDE</div>
+    <div class="card-rescue">
+        <b>A - Airways & Cervical Spine</b>
+        <p class="small mb-0">Controllo pervietà, aspirazione, rimozione corpi estranei. Immobilizzazione manuale o collare cervicale.</p>
     </div>
-    <div class="card p-3">
-        <h6><b>BLSD (ERC 2021)</b></h6>
-        <p class="small text-muted">Rapporto 30:2. Massaggio al centro del torace, profondità 5-6cm. DAE subito!</p>
+    <div class="card-rescue">
+        <b>B - Breathing</b>
+        <p class="small mb-0">OPACS: Osserva, Palpa, Ascolta, Conta (Freq. Respi.), Satura (SpO2). Somministrazione O2 se necessario.</p>
+    </div>
+    <div class="card-rescue">
+        <b>C - Circulation</b>
+        <p class="small mb-0">Ricerca emorragie massive (X), controllo polso (Ritmo, Qualità), colorito cutaneo, riempimento capillare.</p>
+    </div>
+    <div class="card-rescue">
+        <b>D - Disability</b>
+        <p class="small mb-0">GCS (Glasgow Coma Scale), Pupille (Diametro, Reattività), AVPU, Glicemia.</p>
+    </div>
+    <div class="card-rescue">
+        <b>E - Exposure</b>
+        <p class="small mb-0">Esposizione del paziente per ricerca traumi nascosti, prevenzione ipotermia (coperta termica).</p>
     </div>
 
-    <h5 class="section-title">TECNICHE DI IMMOBILIZZAZIONE</h5>
-    <div class="card p-3">
-        <h6><b>Spinalizzazione</b></h6>
-        <p class="small text-muted">Collare cervicale (scelta taglia corretta), posizionamento tavola spinale tramite Log-roll o cucchiaio.</p>
+    <div class="section-header">Tecniche e Presidi</div>
+    <div class="card-rescue" style="border-left-color: var(--blue);">
+        <b>Spinalizzazione (Trauma)</b>
+        <p class="small">Uso di Collare, Tavola Spinale, Ragno e Fermacapo. Manovra di Log-Roll o cucchiaio (Barella a cucchiaio).</p>
     </div>
-    <div class="card p-3">
-        <h6><b>Log-Roll</b></h6>
-        <p class="small text-muted">Manovra a 3 o 4 operatori per la rotazione sul fianco del paziente traumatizzato.</p>
+    <div class="card-rescue" style="border-left-color: var(--blue);">
+        <b>Estricazione (Ked)</b>
+        <p class="small">Uso dell'estricatore KED per pazienti in auto. Sequenza: Testa, Torace, Bacino.</p>
+    </div>
+</div>
+
+<div id="chatbot" class="page">
+    <div id="chat-window">
+        <div class="bubble bot">Ciao Collega! 🚑 Sono il database di RescuePro. Chiedimi qualsiasi cosa su protocolli, manovre o presidi.</div>
+    </div>
+    <div class="input-group mt-3 p-2">
+        <input type="text" id="user-input" class="form-control" placeholder="Esempio: Come si usa il KED?">
+        <button class="btn btn-danger" onclick="handleChat()">Chiedi</button>
     </div>
 </div>
 
 <div id="quiz" class="page">
-    <h5 class="section-title">SIMULAZIONE ESAME</h5>
-    <div id="quiz-container" class="card p-3 text-center">
-        <p id="q-text">Sei pronto per il test?</p>
-        <div id="q-options" class="d-grid gap-2">
-            <button class="btn btn-outline-danger" onclick="startQuiz()">Inizia Quiz</button>
-        </div>
-    </div>
-    <div id="q-results" class="card p-3 d-none"></div>
-</div>
-
-<div id="chatbot" class="page">
-    <h5 class="section-title">RESCUE-AI CHAT</h5>
-    <div class="card p-3">
-        <div id="chat-box" class="d-flex flex-column">
-            <div class="msg bot">Ciao! Sono il tuo assistente al soccorso. Chiedimi del "BLSD", "ABCDE" o "Trauma".</div>
-        </div>
-        <div class="input-group">
-            <input type="text" id="chat-input" class="form-control" placeholder="Scrivi qui...">
-            <button class="btn btn-danger" onclick="askBot()">Invia</button>
+    <div id="quiz-ui" class="card-rescue text-center py-5">
+        <h4 id="q-title">Pronto per la simulazione?</h4>
+        <div id="q-box" class="d-grid gap-2 mt-4">
+            <button class="btn btn-danger btn-lg" onclick="startQuiz()">Inizia Test Rapido</button>
         </div>
     </div>
 </div>
 
 <div class="bottom-nav">
-    <div class="nav-item active" onclick="showPage('teoria', this)">📖<br>Protocolli</div>
-    <div class="nav-item" onclick="showPage('quiz', this)">📝<br>Test</div>
-    <div class="nav-item" onclick="showPage('chatbot', this)">🤖<br>Assistente</div>
+    <div class="nav-item active" onclick="nav('protocolli', this)">📑<br>Protocolli</div>
+    <div class="nav-item" onclick="nav('chatbot', this)">💬<br>AI Assist</div>
+    <div class="nav-item" onclick="nav('quiz', this)">⏱️<br>Quiz</div>
 </div>
 
 <script>
-    // SPLASH SCREEN
-    window.onload = () => {
-        setTimeout(() => {
-            document.getElementById('splash').style.opacity = '0';
-            setTimeout(() => document.getElementById('splash').style.display = 'none', 500);
-        }, 1500);
+    // Conoscenza del Chatbot
+    const rescueDB = {
+        "blsd": "BLSD: 30 compressioni, 2 ventilazioni. Frequenza 100-120/min. Profondità 5-6cm. Accendi il DAE subito.",
+        "ked": "KED: Si usa per estricazione da veicoli. Ricorda l'ordine dei lacci: Verde, Giallo, Rosso (Torace), Nero (Inguine), infine la Testa.",
+        "abcde": "ABCDE: A(Airway), B(Breathing), C(Circulation), D(Disability), E(Exposure). È il metodo di valutazione primaria universale.",
+        "spinalizzazione": "Spinalizzazione: Immobilizzazione su tavola spinale con collare cervicale, ragno e fermacapo. Mantenere sempre l'asse testa-collo-tronco.",
+        "emorragia": "Emorragie: Pressione diretta, bendaggio compressivo. Se non basta su arti, usare il Tourniquet (XABCDE).",
+        "gcs": "GCS: Valuta Apertura occhi (1-4), Risposta Verbale (1-5), Risposta Motoria (1-6). Minimo 3, Massimo 15.",
+        "ossigeno": "Ossigeno: In maschera con reservoir 12-15 L/min per critici. Occhialini 2-4 L/min per pazienti stabili.",
+        "heimlich": "Heimlich: Manovra per ostruzione completa vie aeree. Spinte sub-diaframmatiche 'a cucchiaio' verso l'alto."
     };
 
-    // NAVIGAZIONE
-    function showPage(id, el) {
+    function handleChat() {
+        const input = document.getElementById('user-input');
+        const win = document.getElementById('chat-window');
+        const text = input.value.toLowerCase();
+        if(!text) return;
+
+        win.innerHTML += `<div class="bubble user">${input.value}</div>`;
+        
+        let response = "Mi dispiace, non ho questa specifica tecnica nel database. Prova a chiedermi di: BLSD, ABCDE, KED, Spinalizzazione, GCS o Emorragie.";
+        
+        for (let key in rescueDB) {
+            if(text.includes(key)) { response = rescueDB[key]; break; }
+        }
+
+        setTimeout(() => {
+            win.innerHTML += `<div class="bubble bot">${response}</div>`;
+            win.scrollTop = win.scrollHeight;
+        }, 400);
+        input.value = "";
+    }
+
+    // Navigazione
+    function nav(id, el) {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
         document.getElementById(id).classList.add('active');
         el.classList.add('active');
     }
 
-    // CHATBOT LOGIC
-    function askBot() {
-        const input = document.getElementById('chat-input');
-        const box = document.getElementById('chat-box');
-        if(!input.value) return;
-
-        // Aggiungi msg utente
-        box.innerHTML += `<div class="msg user">${input.value}</div>`;
-        const val = input.value.toLowerCase();
-        let reply = "Non ho capito, riprova con: BLSD, ABCDE o Trauma.";
-
-        if(val.includes("blsd")) reply = "Rapporto 30:2, 100-120 compressioni al minuto. Profondità 5-6 cm.";
-        if(val.includes("abcde")) reply = "A: Airway, B: Breathing, C: Circulation, D: Disability, E: Exposure.";
-        if(val.includes("trauma") || val.includes("spinal")) reply = "Usa il collare cervicale e tavola spinale. Ricorda di mantenere l'asse testa-collo-tronco.";
-
-        setTimeout(() => {
-            box.innerHTML += `<div class="msg bot">${reply}</div>`;
-            box.scrollTop = box.scrollHeight;
-        }, 500);
-        input.value = "";
-    }
-
-    // QUIZ LOGIC (Esempio rapido)
-    const questions = [
-        { q: "Quante compressioni nell'adulto?", a: ["30", "15", "100"], c: 0 },
-        { q: "Quale manovra per trauma?", a: ["Iperestensione", "Sublussazione mandibola", "Heimlich"], c: 1 }
+    // Quiz Logic
+    const qData = [
+        { q: "Qual è l'ordine dei lacci del KED?", a: ["Testa-Torace-Gambe", "Torace-Gambe-Testa", "Gambe-Torace-Testa"], c: 1 },
+        { q: "In ABCDE, cosa valuti in 'B'?", a: ["Glicemia", "Emorragie", "Qualità del respiro"], c: 2 },
+        { q: "Frequenza compressioni BLSD?", a: ["100-120/min", "80-100/min", "Sopra 140/min"], c: 0 }
     ];
-    let cur = 0; let score = 0;
+    let qIdx = 0; let score = 0;
 
     function startQuiz() {
-        const q = questions[cur];
-        document.getElementById('q-text').innerText = q.q;
-        const opts = document.getElementById('q-options');
-        opts.innerHTML = "";
+        const q = qData[qIdx];
+        document.getElementById('q-title').innerText = q.q;
+        const box = document.getElementById('q-box');
+        box.innerHTML = "";
         q.a.forEach((opt, i) => {
-            opts.innerHTML += `<button class="btn btn-outline-secondary" onclick="checkQ(${i})">${opt}</button>`;
+            box.innerHTML += `<button class="btn btn-outline-dark p-3" onclick="checkQuiz(${i})">${opt}</button>`;
         });
     }
 
-    function checkQ(i) {
-        if(i === questions[cur].c) score++;
-        cur++;
-        if(cur < questions.length) startQuiz();
+    function checkQuiz(i) {
+        if(i === qData[qIdx].c) score++;
+        qIdx++;
+        if(qIdx < qData.length) startQuiz();
         else {
-            document.getElementById('q-text').innerText = `Test Finito! Punteggio: ${score}/${questions.length}`;
-            document.getElementById('q-options').innerHTML = `<button class="btn btn-danger" onclick="location.reload()">Ricomincia</button>`;
+            document.getElementById('q-title').innerText = `Fine! Risultato: ${score}/${qData.length}`;
+            document.getElementById('q-box').innerHTML = `<button class="btn btn-danger" onclick="location.reload()">Riprova</button>`;
         }
     }
-</script>
 
+    // Splash
+    window.onload = () => { setTimeout(() => { document.getElementById('splash').style.opacity = '0'; setTimeout(()=> document.getElementById('splash').style.display='none', 500); }, 2000); };
+</script>
 </body>
 </html>

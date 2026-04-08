@@ -5,174 +5,59 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>RescuePro</title>
 
-    <link rel="apple-touch-icon" href="IMG_4138.png">
+    <link rel="apple-touch-icon" href="./IMG_4138.png">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="RescuePro">
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-
     <style>
-        :root {
-            --primary-red: #8b151a; 
-            --dark-blue: #2b2d42;
-            --light-gray: #f8f9fa;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--light-gray);
-            margin: 0;
-            padding: 0;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        /* Splash Screen (Logo centrato all'avvio) */
-        #splash-screen {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background-color: #8b151a; 
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 10000;
-            transition: opacity 0.6s ease;
-        }
-
-        #splash-screen img {
-            width: 180px;
-            height: auto;
-            border-radius: 40px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-        }
-
-        #main-content { opacity: 0; transition: opacity 0.5s ease; }
-
-        .navbar { background-color: var(--primary-red) !important; }
+        :root { --primary-red: #8b151a; }
+        body { font-family: sans-serif; background-color: #f8f9fa; margin: 0; }
         
-        .card-custom {
-            border: none;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-            margin-bottom: 20px;
+        /* Splash Screen */
+        #splash {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: #8b151a; display: flex; justify-content: center;
+            align-items: center; z-index: 9999; transition: opacity 0.5s;
         }
-
-        .quiz-container { display: none; background: white; padding: 20px; border-radius: 15px; }
-        .correct { color: #28a745; font-weight: bold; }
-        .wrong { color: #dc3545; font-weight: bold; }
+        #splash img { width: 150px; border-radius: 30px; }
+        
+        #app-content { display: none; }
+        .navbar { background-color: var(--primary-red) !important; }
+        .card { border: none; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin-bottom: 15px; }
     </style>
 </head>
 <body>
 
-<div id="splash-screen">
-    <img src="IMG_4138.png" alt="Logo RescuePro">
-    <div class="spinner-border text-light mt-4" role="status"></div>
+<div id="splash">
+    <img src="./IMG_4138.png" alt="Logo">
 </div>
 
-<div id="main-content">
-    <nav class="navbar navbar-dark sticky-top">
-        <div class="container">
-            <a class="navbar-brand fw-bold" href="#">
-                <img src="IMG_4138.png" width="30" height="30" class="rounded me-2"> RESCUEPRO
-            </a>
-        </div>
+<div id="app-content">
+    <nav class="navbar navbar-dark p-3">
+        <span class="navbar-brand fw-bold">RESCUEPRO</span>
     </nav>
 
-    <div class="container py-4">
-        <section id="teoria">
-            <h3 class="fw-bold mb-3">Protocolli Rapidi</h3>
-            <div class="card card-custom p-3">
-                <h5 class="text-danger fw-bold">BLSD Adulto</h5>
-                <p class="small mb-0">1. Sicurezza Scena<br>2. Valuta Coscienza/Respiro<br>3. Chiama 112/118<br>4. RCP 30:2 (100-120 bpm)<br>5. Accendi DAE appena disponibile.</p>
-            </div>
-            <div class="card card-custom p-3">
-                <h5 class="text-danger fw-bold">ABCDE</h5>
-                <p class="small mb-0"><strong>A:</strong> Airways (Vie aeree)<br><strong>B:</strong> Breathing (Respiro)<br><strong>C:</strong> Circulation (Circolo/Emorragie)<br><strong>D:</strong> Disability (Stato neurologico)<br><strong>E:</strong> Exposure (Ambiente).</p>
-            </div>
-        </section>
-
-        <section id="quiz-section" class="mt-4">
-            <div id="quiz-intro" class="text-center">
-                <button class="btn btn-danger btn-lg w-100" onclick="startQuiz()">Inizia Quiz</button>
-            </div>
-
-            <div id="quiz-box" class="quiz-container shadow">
-                <div class="d-flex justify-content-between mb-2">
-                    <small id="question-number"></small>
-                    <small id="score-display"></small>
-                </div>
-                <h5 id="question-text" class="mb-4 text-center"></h5>
-                <div id="options-container" class="d-grid gap-2"></div>
-            </div>
-
-            <div id="result-box" class="quiz-container shadow text-center">
-                <h2 class="fw-bold">Risultato</h2>
-                <div id="final-score" class="display-3 fw-bold text-danger"></div>
-                <div id="feedback-list" class="text-start mt-4 small"></div>
-                <button class="btn btn-dark mt-4" onclick="location.reload()">Riprova Test</button>
-            </div>
-        </section>
+    <div class="container mt-4">
+        <div class="card p-3">
+            <h5 class="text-danger fw-bold">Protocollo BLSD</h5>
+            <p class="small">30 Compressioni : 2 Ventilazioni. Frequenza 100-120/min.</p>
+        </div>
+        
+        <button class="btn btn-danger w-100 btn-lg mt-3" onclick="alert('Quiz in arrivo!')">Inizia Quiz</button>
     </div>
 </div>
 
 <script>
-    // Logic per la Splash Screen
-    window.addEventListener('load', () => {
+    window.onload = () => {
         setTimeout(() => {
-            document.getElementById('splash-screen').style.opacity = '0';
-            document.getElementById('main-content').style.opacity = '1';
+            document.getElementById('splash').style.opacity = '0';
             setTimeout(() => {
-                document.getElementById('splash-screen').style.display = 'none';
-            }, 600);
+                document.getElementById('splash').style.display = 'none';
+                document.getElementById('app-content').style.display = 'block';
+            }, 500);
         }, 2000);
-    });
-
-    // Quiz Data & Logic
-    const quizData = [
-        { q: "Qual è il rapporto compressioni/ventilazioni nel BLSD adulto?", options: ["15:2", "30:2", "30:5"], correct: 1, exp: "Rapporto universale 30:2." },
-        { q: "Cosa valuta la 'C' nell'ABCDE?", options: ["Coscienza", "Circolazione ed emorragie", "Cervello"], correct: 1, exp: "Si valuta il circolo, polso carotideo e controllo emorragie." },
-        { q: "Frequenza cardiaca nel massaggio adulto?", options: ["80-100 bpm", "100-120 bpm", "120-140 bpm"], correct: 1, exp: "La frequenza ottimale è tra 100 e 120 bpm." },
-        { q: "Manovra di Gaslini è usata per?", options: ["Ostruzione vie aeree", "Trauma cranico", "Disostruzione pediatrica"], correct: 2, exp: "È la manovra per la disostruzione delle vie aeree nel lattante/bambino." }
-    ];
-
-    let current = 0; let score = 0; let userAnswers = [];
-
-    function startQuiz() {
-        document.getElementById('quiz-intro').style.display = 'none';
-        document.getElementById('quiz-box').style.display = 'block';
-        showQuestion();
-    }
-
-    function showQuestion() {
-        const q = quizData[current];
-        document.getElementById('question-number').innerText = `Dmd ${current+1}/${quizData.length}`;
-        document.getElementById('question-text').innerText = q.q;
-        const container = document.getElementById('options-container');
-        container.innerHTML = '';
-        q.options.forEach((opt, i) => {
-            const btn = document.createElement('button');
-            btn.className = 'btn btn-outline-secondary text-start p-3';
-            btn.innerText = opt;
-            btn.onclick = () => { userAnswers.push(i); if(i===q.correct) score++; current++; if(current < quizData.length) showQuestion(); else showResults(); };
-            container.appendChild(btn);
-        });
-    }
-
-    function showResults() {
-        document.getElementById('quiz-box').style.display = 'none';
-        document.getElementById('result-box').style.display = 'block';
-        document.getElementById('final-score').innerText = `${score}/${quizData.length}`;
-        let feedback = "<h5>Riepilogo:</h5>";
-        quizData.forEach((item, i) => {
-            const ok = userAnswers[i] === item.correct;
-            feedback += `<div class='border-bottom mb-2 pb-2'><b>${i+1}. ${item.q}</b><br><span class='${ok?'correct':'wrong'}'>${ok?'✓':'✗'}</span> Tua: ${item.options[userAnswers[i]]} | Corr: ${item.options[item.correct]}<br><i class='text-muted small'>${item.exp}</i></div>`;
-        });
-        document.getElementById('feedback-list').innerHTML = feedback;
-    }
+    };
 </script>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

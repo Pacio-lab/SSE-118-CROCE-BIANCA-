@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>RescuePro Ultra 🚑</title>
+    <title>RescuePro Master Edition</title>
 
     <link rel="apple-touch-icon" href="./IMG_4138.png">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -11,173 +11,285 @@
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        :root { --red: #8b151a; --blue: #0d47a1; --green: #2d6a4f; --bg: #f8f9fa; }
-        body { font-family: -apple-system, sans-serif; background: var(--bg); padding-bottom: 90px; }
-        
-        #splash { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--red); display: flex; justify-content: center; align-items: center; z-index: 10000; transition: 0.5s; }
-        #splash img { width: 140px; border-radius: 35px; }
+        :root {
+            --red-sos: #8b151a;
+            --blue-med: #0d47a1;
+            --green-safe: #1b5e20;
+            --dark-gray: #1a1a1a;
+        }
 
-        .page { display: none; padding: 20px; animation: fadeIn 0.3s; }
-        .page.active { display: block; }
-        @keyframes fadeIn { from {opacity: 0;} to {opacity: 1;} }
-        
-        /* Schede Cliccabili */
-        .rescue-card { background: white; border-radius: 15px; padding: 15px; margin-bottom: 12px; border-left: 5px solid var(--red); box-shadow: 0 4px 6px rgba(0,0,0,0.05); cursor: pointer; transition: 0.2s; }
-        .rescue-card:active { transform: scale(0.98); background: #f1f1f1; }
-        
-        /* Chatbot */
-        #chat-win { height: 60vh; overflow-y: auto; background: #efe7dd; border-radius: 15px; padding: 15px; display: flex; flex-direction: column; border: 1px solid #ccc; }
-        .bbl { padding: 10px 15px; border-radius: 15px; margin-bottom: 8px; max-width: 85%; font-size: 0.9rem; }
-        .bot { background: white; align-self: flex-start; box-shadow: 2px 2px 5px rgba(0,0,0,0.05); }
-        .user { background: #dcf8c6; align-self: flex-end; }
+        body {
+            font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto;
+            background-color: #f0f2f5;
+            color: #333;
+            padding-bottom: 90px;
+            user-select: none;
+        }
 
-        .nav-bar { position: fixed; bottom: 0; width: 100%; background: white; display: flex; padding: 12px 0; border-top: 1px solid #ddd; z-index: 1000; }
-        .nav-btn { flex: 1; text-align: center; color: #777; font-size: 11px; background: none; border: none; }
-        .nav-btn.active { color: var(--red); font-weight: bold; }
+        /* Splash Screen */
+        #splash {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--red-sos); display: flex; flex-direction: column;
+            justify-content: center; align-items: center; z-index: 10000;
+            transition: opacity 0.6s ease;
+        }
+        #splash img { width: 160px; border-radius: 40px; box-shadow: 0 15px 35px rgba(0,0,0,0.4); }
 
-        /* Stile Modale Dettagli */
-        .detail-view { position: fixed; top: 0; left: 100%; width: 100%; height: 100%; background: white; z-index: 2000; transition: 0.3s; overflow-y: auto; padding: 20px; }
-        .detail-view.open { left: 0; }
-        .btn-close-view { background: var(--red); color: white; border: none; padding: 10px 20px; border-radius: 10px; margin-bottom: 20px; }
+        /* Navbar */
+        .navbar-custom {
+            background-color: var(--red-sos);
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-weight: 800;
+            font-size: 1.2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        /* Layout Schede */
+        .container-app { padding: 15px; }
+        .category-title { font-size: 0.8rem; font-weight: 700; color: #888; text-transform: uppercase; margin: 15px 0 10px 5px; }
+        
+        .rescue-card {
+            background: white; border-radius: 18px; padding: 18px;
+            margin-bottom: 15px; border-left: 6px solid var(--red-sos);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        .rescue-card:active { transform: scale(0.97); background: #f8f8f8; }
+
+        /* Detail View (Full Page) */
+        .detail-view {
+            position: fixed; top: 0; left: 100%; width: 100%; height: 100%;
+            background: white; z-index: 5000; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow-y: auto; padding: 25px;
+        }
+        .detail-view.active { left: 0; }
+        .back-btn { 
+            background: var(--red-sos); color: white; border: none; 
+            padding: 12px 20px; border-radius: 12px; font-weight: 600; margin-bottom: 20px;
+        }
+
+        /* Chatbot Interface */
+        #chat-window {
+            height: calc(100vh - 280px); overflow-y: auto;
+            background: #e5ddd5; border-radius: 20px; padding: 15px;
+            display: flex; flex-direction: column; gap: 10px;
+        }
+        .bubble { padding: 12px 16px; border-radius: 18px; font-size: 0.95rem; line-height: 1.4; max-width: 85%; }
+        .bubble.bot { background: white; align-self: flex-start; border-bottom-left-radius: 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
+        .bubble.user { background: #dcf8c6; align-self: flex-end; border-bottom-right-radius: 4px; }
+
+        /* Bottom Nav */
+        .bottom-nav {
+            position: fixed; bottom: 0; width: 100%; height: 80px;
+            background: rgba(255,255,255,0.9); backdrop-filter: blur(15px);
+            display: flex; align-items: center; border-top: 1px solid #ddd; z-index: 4000;
+        }
+        .nav-link-custom {
+            flex: 1; text-align: center; color: #888; text-decoration: none;
+            font-size: 10px; font-weight: 600;
+        }
+        .nav-link-custom.active { color: var(--red-sos); }
+        .nav-link-custom span { font-size: 24px; display: block; margin-bottom: 2px; }
+
+        /* Quiz UI */
+        .quiz-option {
+            background: #fff; border: 2px solid #eee; padding: 15px;
+            border-radius: 12px; margin-bottom: 10px; cursor: pointer;
+        }
+        .quiz-option.correct { background: #d4edda; border-color: #28a745; }
+        .quiz-option.wrong { background: #f8d7da; border-color: #dc3545; }
     </style>
 </head>
 <body>
 
-<div id="splash"><img src="./IMG_4138.png"></div>
+<div id="splash">
+    <img src="./IMG_4138.png" alt="Logo">
+    <div class="mt-4 text-white fw-bold">CARICAMENTO PROTOCOLLI...</div>
+</div>
 
-<nav class="navbar navbar-dark sticky-top p-2" style="background: var(--red);">
-    <div class="container-fluid justify-content-center">
-        <span class="navbar-brand fw-bold">RESCUEPRO ULTRA 🚑</span>
-    </div>
-</nav>
+<div class="navbar-custom">RESCUEPRO MASTER 🚑</div>
 
-<div id="manuale" class="page active">
-    <div class="rescue-card" onclick="openDetail('base')">
-        <h6><b>Protocolli Base</b></h6>
-        <p class="small mb-0 text-muted">ABCDE, BLSD, SBAR, SAMPLE. Tocca per i dettagli.</p>
+<div id="page-manuale" class="container-app page active">
+    <div class="category-title">Protocolli di Intervento</div>
+    <div class="rescue-card" onclick="showTopic('abcde')">
+        <h6 class="fw-bold m-0">ABCDE & Valutazione Primaria</h6>
+        <p class="small text-muted mb-0">Il metodo universale di approccio al paziente critico.</p>
     </div>
-    <div class="rescue-card" style="border-left-color: var(--blue);" onclick="openDetail('trauma')">
-        <h6><b>Trauma & Immobilizzazione</b></h6>
-        <p class="small mb-0 text-muted">KED, Spinalizzazione, Log Roll, Estricazione. Tocca per i dettagli.</p>
+    <div class="rescue-card" onclick="showTopic('blsd')">
+        <h6 class="fw-bold m-0">BLSD Adulto e Pediatrico</h6>
+        <p class="small text-muted mb-0">Linee guida ERC 2021 per la rianimazione.</p>
     </div>
-    <div class="rescue-card" style="border-left-color: var(--green);" onclick="openDetail('speciali')">
-        <h6><b>Emergenze Speciali</b></h6>
-        <p class="small mb-0 text-muted">Parto, Pediatrico, Triage START, Annegamento. Tocca per i dettagli.</p>
+
+    <div class="category-title">Tecniche & Presidi</div>
+    <div class="rescue-card" style="border-left-color: var(--blue-med);" onclick="showTopic('trauma')">
+        <h6 class="fw-bold m-0">Traumatologia & Immobilizzazione</h6>
+        <p class="small text-muted mb-0">KED, Spinalizzazione, Collari e Log-Roll.</p>
+    </div>
+    <div class="rescue-card" style="border-left-color: var(--blue-med);" onclick="showTopic('emorragie')">
+        <h6 class="fw-bold m-0">Gestione Emorragie & Shock</h6>
+        <p class="small text-muted mb-0">Tourniquet, bendaggi e classificazione dello shock.</p>
+    </div>
+
+    <div class="category-title">Specialità</div>
+    <div class="rescue-card" style="border-left-color: var(--green-safe);" onclick="showTopic('parto')">
+        <h6 class="fw-bold m-0">Emergenza Ostetrica (Parto)</h6>
+        <p class="small text-muted mb-0">Gestione del parto imminente e punteggio APGAR.</p>
     </div>
 </div>
 
-<div id="detail-view" class="detail-view">
-    <button class="btn-close-view" onclick="closeDetail()">← Torna Indietro</button>
-    <div id="detail-content"></div>
-</div>
-
-<div id="chat" class="page">
-    <div id="chat-win">
-        <div class="bbl bot"><b>SISTEMA ENCICLOPEDICO ATTIVO.</b><br>Chiedimi qualsiasi cosa (es. "Manovra di Gaslini", "Punteggio APGAR", "Protocollo Ictus", "Pneumotorace").</div>
+<div id="page-chat" class="container-app page">
+    <div id="chat-window">
+        <div class="bubble bot"><b>SISTEMA ENCICLOPEDICO ATTIVO.</b><br>Scrivi un sintomo, una patologia o un presidio (es: "Cosa valuto in D?", "Punteggio GCS", "Sospetto Ictus", "Pneumotorace").</div>
     </div>
     <div class="input-group mt-3">
-        <input type="text" id="chat-in" class="form-control" placeholder="Scrivi qui...">
-        <button class="btn btn-danger" onclick="ask()">INVIA</button>
+        <input type="text" id="chat-in" class="form-control p-3" placeholder="Chiedi al database...">
+        <button class="btn btn-danger px-4" onclick="askBot()">INVIA</button>
     </div>
 </div>
 
-<div class="nav-bar">
-    <button class="nav-btn active" id="btn-man" onclick="nav('manuale', this)">📖<br>MANUALE</button>
-    <button class="nav-btn" onclick="nav('chat', this)">🤖<br>CHATBOT</button>
-    <button class="nav-btn" onclick="nav('quiz', this)">📝<br>QUIZ</button>
+<div id="page-quiz" class="container-app page">
+    <div class="rescue-card text-center p-4">
+        <h5 id="quiz-question" class="fw-bold">Pronto per il test finale?</h5>
+        <div id="quiz-options" class="mt-4">
+            <button class="btn btn-danger btn-lg w-100" onclick="initQuiz()">Inizia Simulazione</button>
+        </div>
+    </div>
+</div>
+
+<div id="topic-detail" class="detail-view">
+    <button class="back-btn" onclick="closeTopic()">← CHIUDI</button>
+    <div id="topic-content"></div>
+</div>
+
+<div class="bottom-nav">
+    <a href="#" class="nav-link-custom active" onclick="switchNav('manuale', this)"><span>📖</span>Manuale</a>
+    <a href="#" class="nav-link-custom" onclick="switchNav('chat', this)"><span>🤖</span>Assistente</a>
+    <a href="#" class="nav-link-custom" onclick="switchNav('quiz', this)"><span>✏️</span>Quiz</a>
 </div>
 
 <script>
-    // DATA PER DETTAGLI SCHEDE
-    const details = {
-        base: `<h3>Protocolli Base</h3>
-               <hr>
-               <h5>ABCDE</h5>
-               <p><b>A (Airways):</b> Pervietà vie aeree, controllo rachide cervicale.<br>
-                  <b>B (Breathing):</b> OPACS (Osserva, Palpa, Ascolta, Conta, Satura).<br>
-                  <b>C (Circulation):</b> Polso radiale/carotideo, emorragie massive, colore e temp. cute.<br>
-                  <b>D (Disability):</b> GCS, pupille, glicemia.<br>
-                  <b>E (Exposure):</b> Esposizione per tagli/traumi, prevenzione ipotermia.</p>
-               <h5>BLSD</h5>
-               <p>30 compressioni / 2 ventilazioni. Frequenza 100-120 al minuto. Profondità 5-6 cm.</p>
-               <h5>SAMPLE</h5>
-               <p>S: Segni/Sintomi, A: Allergie, M: Medicine, P: Patologie, L: Libagioni, E: Evento.</p>`,
+    // DATABASE CONOSCENZA DETTAGLIATA
+    const topics = {
+        abcde: `<h2>Protocollo ABCDE</h2><hr>
+                <p><b>A (Airways):</b> Controllo pervietà, aspirazione, rimozione corpi estranei. Se trauma, mantenere stabilità cervicale manuale.</p>
+                <p><b>B (Breathing):</b> Valutazione OPACS. Osserva espansione, Palpa crepitii, Ascolta rumori, Conta atti (12-20 norma), Satura (>94%).</p>
+                <p><b>C (Circulation):</b> Ricerca emorragie massive (X), polso radiale/carotideo, temperatura cute, riempimento capillare (<2s).</p>
+                <p><b>D (Disability):</b> GCS (Glasgow), Pupille (Isocoriche, Reattive), AVPU, Glicemia (se alterato).</p>
+                <p><b>E (Exposure):</b> Taglio vestiti se necessario, ricerca segni nascosti, coperta termica subito.</p>`,
         
-        trauma: `<h3>Trauma & Immobilizzazione</h3>
-                 <hr>
-                 <h5>KED (Estricazione)</h5>
-                 <p>Sequenza lacci: Verde (Sopra), Giallo (Centro), Rosso (Sotto). Lacci neri inguinali. Infine testa.</p>
-                 <h5>SPINALIZZAZIONE</h5>
-                 <p>Collare cervicale -> Log Roll o Cucchiaio -> Tavola Spinale -> Ragno -> Fermacapo.</p>
-                 <h5>LOG ROLL</h5>
-                 <p>Manovra a 3 operatori per ruotare il paziente mantenendo l'asse testa-collo-tronco.</p>`,
+        blsd: `<h2>BLSD & RCP</h2><hr>
+               <p><b>Sequenza Adulto:</b> Sicurezza -> Valuta Coscienza/Respiro -> Chiama 118 -> RCP 30:2 -> DAE.</p>
+               <p><b>Tecnica:</b> Centro del torace, braccia tese, frequenza 100-120 bpm, profondità 5-6 cm. Minime interruzioni.</p>
+               <p><b>Pediatrico (PBLSD):</b> Se soccorritore professionale in coppia, rapporto 15:2. Inizia sempre con 5 ventilazioni iniziali.</p>`,
         
-        speciali: `<h3>Emergenze Speciali</h3>
-                   <hr>
-                   <h5>Triage START</h5>
-                   <p>Cammina? SI (Verde). Respira? NO (Nero), SI >30 (Rosso). Polso radiale assente? (Rosso).</p>
-                   <h5>PARTO</h5>
-                   <p>Valuta APGAR a 1 e 5 minuti. Parametri: Colore, Battito, Riflessi, Tono muscolare, Respiro.</p>
-                   <h5>PEDIATRICO</h5>
-                   <p>RCP: Se solo, 30:2. Se in due professionisti, 15:2. Inizia con 5 ventilazioni.</p>`
+        trauma: `<h2>Trauma & Immobilizzazione</h2><hr>
+                 <p><b>KED:</b> Estricatore per pazienti stabili in auto. Sequenza lacci: Torace (Verde-Sopra, Giallo-Centro, Rosso-Sotto), Inguinali (Neri), Testa (Cinghie).</p>
+                 <p><b>Spinalizzazione:</b> Uso della tavola spinale con ragno e fermacapo. Indispensabile per traumi ad alta dinamica.</p>
+                 <p><b>Collare Cervicale:</b> Scelta della taglia basata sulla distanza tra trapezio e mento. Non stringere eccessivamente.</p>`,
+
+        emorragie: `<h2>Emorragie & Shock</h2><hr>
+                    <p><b>Protocollo XABCDE:</b> La 'X' indica l'emorragia massiva esterna da trattare prima di ogni altra cosa.</p>
+                    <p><b>Tourniquet:</b> Posizionare 5-8cm sopra la ferita (mai sulle articolazioni). Segnare l'orario di applicazione.</p>
+                    <p><b>Shock:</b> Ipovolemico (perdita liquidi), Cardiogeno (pompa), Neurogeno (lesione spinale), Anafilattico (allergia).</p>`,
+
+        parto: `<h2>Emergenza Ostetrica</h2><hr>
+                <p><b>Fasi:</b> Dilatazione, Espulsiva, Secondamento (fuoriuscita placenta). Non tirare mai il cordone.</p>
+                <p><b>APGAR:</b> Punteggio a 1 e 5 minuti. Valuta Colore, Battito, Riflessi, Tono muscolare, Respiro. (0-10 punti).</p>
+                <p><b>Cura Neonato:</b> Asciugare bene, aspirare secrezioni se necessario, tenere al caldo (ipertermia precoce).</p>`
     };
 
-    // DATABASE CHATBOT (Enciclopedico)
-    const db = {
-        "apgar": "Punteggio APGAR (0-10): Valuta la vitalità del neonato. Parametri: Apparenza (colore), Polso, Gesticolazione (riflessi), Attività (tono), Respiro.",
-        "gaslini": "Manovra di Gaslini: Tecnica per la disostruzione delle vie aeree nel lattante (5 colpi dorsali e 5 compressioni toraciche).",
-        "ictus": "ICTUS (FAST): Facial drooping (bocca storta), Arm weakness (deficit forza), Speech (difficoltà parola), Time (chiama 118 subito).",
-        "pneumotorace": "PNEUMOTORACE (PNX): Accumulo di aria nel cavo pleurico. Segni: Dispnea improvvisa, dolore toracico, sibili, deviazione tracheale (se iperteso).",
-        "sculacciata": "In caso di ostruzione lattante, non sculacciare ma eseguire manovre di disostruzione codificate (Gaslini).",
-        "gcs": "GCS: Apertura Occhi (1-4), Risposta Verbale (1-5), Risposta Motoria (1-6). Sotto 8 = Intubazione/Grave.",
-        "sample": "SAMPLE: Metodo per anamnesi rapida: Sintomi, Allergie, Medicine, Patologie, Libagioni, Eventi.",
-        "ustioni": "Ustioni: Raffreddare con acqua fresca. Regola del 9 (Wallace) per estensione. Attenzione all'inalazione di fumi (vie aeree).",
-        "emorragia": "Emorragia Massiva: Pressione diretta. Se su arto e non si ferma, usare TOURNIQUET (laccio emostatico arterioso) segnando l'ora.",
-        "annegamento": "Annegamento: La priorità è l'ossigenazione. Inizia RCP con ventilazioni (5 iniziali).",
-        "diabete": "Ipoglicemia: Sudorazione fredda, confusione. Dai zucchero se conscio. Iperglicemia: Alito acetonico, sete, cute secca.",
-        "convulsione": "Convulsione: Proteggere il capo, non mettere nulla in bocca. Posizione laterale dopo la fase clonica."
+    // DATABASE CHATBOT "AI"
+    const ai_db = {
+        "ictus": "Sospetto ICTUS: Esegui scala FAST. Faccia (bocca storta?), Arti (cade un braccio?), Speech (parla male?), Time (da quanto tempo?). Trasporto urgente in Stroke Unit.",
+        "gcs": "GLASGOW COMA SCALE: Occhi (1-4), Verbale (1-5), Motoria (1-6). Sotto 9 = Paziente grave/Coma. Massimo 15, Minimo 3.",
+        "ustioni": "USTIONI: Raffreddare con acqua fresca 15-20 min. Non rompere vescicole. Regola del 9: Capo 9%, Tronco 18+18%, Arti sup 9% cad, Arti inf 18% cad.",
+        "annegamento": "ANNEGAMENTO: Priorità Ossigenazione. Inizia RCP con 5 ventilazioni. Se trauma (tuffo), immobilizza rachide.",
+        "gaslini": "Ostruzione Lattante: 5 colpi interscapolari e 5 compressioni toraciche (Manovra di Gaslini). No Heimlich classico sotto l'anno.",
+        "avpu": "Scala AVPU: Alert (Sveglio), Verbal (Risponde a voce), Pain (Risponde a dolore), Unresponsive (Nessuna risposta).",
+        "pneumotorace": "PNX: Accumulo aria nel cavo pleurico. Segni: Dispnea, dolore trafittivo, assenza rumori respiratori su un lato.",
+        "sample": "Anamnesi SAMPLE: Sintomi, Allergie, Medicine, Patologie, Libagioni, Eventi.",
+        "o2": "Ossigeno: Maschera con Reservoir (10-15 L/min per critici), Occhialini (2-4 L/min per lievi). Target Sat: 94-98%."
     };
 
-    function openDetail(key) {
-        document.getElementById('detail-content').innerHTML = details[key];
-        document.getElementById('detail-view').classList.add('open');
+    // Funzioni di Navigazione
+    function switchNav(pageId, el) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.nav-link-custom').forEach(l => l.classList.remove('active'));
+        document.getElementById('page-' + pageId).classList.add('active');
+        el.classList.add('active');
     }
 
-    function closeDetail() {
-        document.getElementById('detail-view').classList.remove('open');
+    function showTopic(key) {
+        document.getElementById('topic-content').innerHTML = topics[key];
+        document.getElementById('topic-detail').classList.add('active');
     }
 
-    function ask() {
-        const inpt = document.getElementById('chat-in');
-        const win = document.getElementById('chat-win');
-        const val = inpt.value.toLowerCase();
-        if(!val) return;
+    function closeTopic() {
+        document.getElementById('topic-detail').classList.remove('active');
+    }
 
-        win.innerHTML += `<div class="bbl user">${inpt.value}</div>`;
-        let reply = "Argomento non trovato. Il mio database copre: APGAR, Gaslini, Ictus, PNX, GCS, SAMPLE, Ustioni, Emorragie, ecc. Prova a cambiare parola!";
-        
-        for(let key in db) {
-            if(val.includes(key)) { reply = "<b>Risultato:</b> " + db[key]; break; }
+    // Logica Chatbot
+    function askBot() {
+        const input = document.getElementById('chat-in');
+        const win = document.getElementById('chat-window');
+        const query = input.value.toLowerCase();
+        if(!query) return;
+
+        win.innerHTML += `<div class="bubble user">${input.value}</div>`;
+        let response = "Argomento non presente in memoria. Prova con: GCS, ICTUS, SAMPLE, USTIONI, PARTO, PNX o GASLINI.";
+
+        for(let key in ai_db) {
+            if(query.includes(key)) { response = ai_db[key]; break; }
         }
 
         setTimeout(() => {
-            win.innerHTML += `<div class="bbl bot">${reply}</div>`;
+            win.innerHTML += `<div class="bubble bot">${response}</div>`;
             win.scrollTop = win.scrollHeight;
         }, 300);
-        inpt.value = "";
+        input.value = "";
     }
 
-    function nav(id, btn) {
-        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-        btn.classList.add('active');
+    // Logica Quiz
+    let currentQ = 0; let score = 0;
+    const questions = [
+        { q: "Qual è il rapporto compressioni/ventilazioni BLSD adulto?", a: ["15:2", "30:2", "30:5"], c: 1 },
+        { q: "Cosa valuta la 'D' nell'ABCDE?", a: ["Deficit Neurologico", "Danni fisici", "Dolore"], c: 0 },
+        { q: "Sotto quale valore GCS il paziente è in coma?", a: ["12", "10", "8"], c: 2 }
+    ];
+
+    function initQuiz() {
+        if(currentQ >= questions.length) {
+            document.getElementById('quiz-question').innerText = `Test Completato! Punteggio: ${score}/${questions.length}`;
+            document.getElementById('quiz-options').innerHTML = `<button class="btn btn-dark w-100" onclick="location.reload()">Ricomincia</button>`;
+            return;
+        }
+        const q = questions[currentQ];
+        document.getElementById('quiz-question').innerText = q.q;
+        const box = document.getElementById('quiz-options');
+        box.innerHTML = "";
+        q.a.forEach((opt, i) => {
+            box.innerHTML += `<div class="quiz-option" onclick="checkAnswer(${i})">${opt}</div>`;
+        });
     }
 
-    window.onload = () => setTimeout(() => { 
-        document.getElementById('splash').style.opacity = '0';
-        setTimeout(() => document.getElementById('splash').style.display='none', 500);
-    }, 1500);
+    function checkAnswer(i) {
+        if(i === questions[currentQ].c) score++;
+        currentQ++;
+        initQuiz();
+    }
+
+    // Splash Loader
+    window.onload = () => {
+        setTimeout(() => {
+            document.getElementById('splash').style.opacity = '0';
+            setTimeout(() => document.getElementById('splash').style.display = 'none', 600);
+        }, 1500);
+    };
 </script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

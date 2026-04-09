@@ -1,0 +1,21 @@
+{
+  "name": "RescuePro Master",
+  "short_name": "RescuePro",
+  "description": "Manuale e Quiz per Soccorritori 118",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#8b151a",
+  "theme_color": "#8b151a",
+  "icons": [
+    {
+      "src": "IMG_4138.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "IMG_4138.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

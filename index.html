@@ -1,266 +1,1038 @@
 <!DOCTYPE html>
+
 <html lang="it">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>RescuePro Master v5.0</title>
-
+    <title>RescuePro Master v6.0</title>
     <link rel="apple-touch-icon" href="./IMG_4138.png">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="format-detection" content="telephone=no">
-
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
         :root {
-            --red-emergency: #8b151a;
-            --blue-clinical: #0d47a1;
-            --green-triage: #1b5e20;
-            --bg-ios: #f2f2f7;
-            --white: #ffffff;
+            --red: #c0392b;
+            --red-dark: #96281b;
+            --red-light: #f9eceb;
+            --blue: #1a5276;
+            --green: #1e8449;
+            --amber: #d68910;
+            --bg: #f0f2f5;
+            --surface: #ffffff;
+            --border: #e4e7ed;
+            --text: #1a1d23;
+            --muted: #6b7280;
+            --radius: 14px;
+            --shadow: 0 2px 12px rgba(0,0,0,0.07);
         }
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica;
-            background-color: var(--bg-ios);
-            color: #1c1c1e;
-            margin: 0;
-            padding-bottom: 100px;
-            -webkit-font-smoothing: antialiased;
-        }
+```
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
-        /* UI Components */
-        .header-app {
-            background: var(--red-emergency);
-            color: white;
-            padding: 50px 20px 20px;
-            text-align: center;
-            font-weight: 800;
-            font-size: 1.4rem;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        }
+    body {
+        font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        padding-bottom: 85px;
+        -webkit-font-smoothing: antialiased;
+    }
 
-        .container-fluid { padding: 20px; }
+    /* ── SPLASH ── */
+    #splash {
+        position: fixed; inset: 0; background: var(--red);
+        display: flex; flex-direction: column; justify-content: center;
+        align-items: center; z-index: 10000; transition: opacity 0.6s ease;
+        gap: 20px;
+    }
+    #splash img { width: 110px; border-radius: 28px; box-shadow: 0 16px 40px rgba(0,0,0,0.3); }
+    #splash h1 { color: white; font-size: 1.4rem; font-weight: 800; letter-spacing: -0.5px; }
+    #splash p { color: rgba(255,255,255,0.7); font-size: 0.8rem; }
+    .splash-bar { width: 140px; height: 3px; background: rgba(255,255,255,0.2); border-radius: 2px; overflow: hidden; }
+    .splash-bar-fill { height: 100%; width: 0; background: white; border-radius: 2px; animation: load 1.4s ease-out forwards; }
+    @keyframes load { to { width: 100%; } }
 
-        .card-rescue {
-            background: var(--white);
-            border-radius: 16px;
-            padding: 20px;
-            margin-bottom: 16px;
-            border: none;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-            transition: all 0.2s ease;
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
-        }
+    /* ── HEADER ── */
+    .header-app {
+        background: var(--red);
+        padding: 52px 20px 18px;
+        display: flex; align-items: center; justify-content: space-between;
+        box-shadow: 0 2px 16px rgba(192,57,43,0.3);
+    }
+    .header-app h1 { color: white; font-size: 1.15rem; font-weight: 800; letter-spacing: -0.3px; }
+    .header-badge { background: rgba(255,255,255,0.2); color: white; font-size: 0.65rem; font-weight: 700; padding: 3px 8px; border-radius: 20px; letter-spacing: 0.5px; }
 
-        .card-rescue::before {
-            content: '';
-            position: absolute;
-            left: 0; top: 0; bottom: 0;
-            width: 6px;
-            background: var(--red-emergency);
-        }
+    /* ── VIEWS ── */
+    .view { padding: 20px; }
+    .d-none { display: none !important; }
 
-        .card-rescue:active { transform: scale(0.97); background: #f9f9f9; }
+    .section-title {
+        font-size: 11px; font-weight: 700; color: var(--muted);
+        text-transform: uppercase; letter-spacing: 1px;
+        margin: 22px 0 10px 2px;
+    }
 
-        /* Splash Screen */
-        #splash {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--red-emergency); display: flex; justify-content: center;
-            align-items: center; z-index: 10000; transition: opacity 0.5s ease;
-        }
-        #splash img { width: 160px; border-radius: 38px; box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+    /* ── PROTOCOL CARDS ── */
+    .card-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .card-rescue {
+        background: var(--surface); border-radius: var(--radius);
+        padding: 18px 14px; border: 1px solid var(--border);
+        box-shadow: var(--shadow); cursor: pointer;
+        transition: transform 0.15s, box-shadow 0.15s;
+        position: relative; overflow: hidden;
+    }
+    .card-rescue:active { transform: scale(0.96); }
+    .card-rescue .card-icon { font-size: 2rem; margin-bottom: 10px; display: block; }
+    .card-rescue h6 { font-size: 0.82rem; font-weight: 700; margin-bottom: 4px; line-height: 1.3; }
+    .card-rescue p { font-size: 0.72rem; color: var(--muted); line-height: 1.4; }
+    .card-rescue .accent-bar { position: absolute; top: 0; left: 0; right: 0; height: 4px; border-radius: var(--radius) var(--radius) 0 0; }
 
-        /* Chatbot Interface - Optimized for iOS */
-        #chat-window {
-            height: calc(100vh - 320px);
-            overflow-y: auto;
-            background: #e5ddd5;
-            border-radius: 20px;
-            padding: 15px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            border: 1px solid #d1d1d6;
-        }
+    .card-wide {
+        background: var(--surface); border-radius: var(--radius);
+        padding: 16px 18px; border: 1px solid var(--border);
+        box-shadow: var(--shadow); cursor: pointer;
+        transition: transform 0.15s; display: flex; align-items: center; gap: 14px;
+        margin-bottom: 10px;
+    }
+    .card-wide:active { transform: scale(0.97); }
+    .card-wide .w-icon { font-size: 1.6rem; flex-shrink: 0; }
+    .card-wide h6 { font-size: 0.88rem; font-weight: 700; margin-bottom: 2px; }
+    .card-wide p { font-size: 0.75rem; color: var(--muted); }
+    .card-wide .chevron { margin-left: auto; color: var(--muted); font-size: 1rem; }
 
-        .msg { padding: 12px 16px; border-radius: 18px; font-size: 0.95rem; line-height: 1.4; max-width: 85%; position: relative; }
-        .msg.bot { background: var(--white); align-self: flex-start; border-bottom-left-radius: 4px; color: #1c1c1e; }
-        .msg.user { background: #dcf8c6; align-self: flex-end; border-bottom-right-radius: 4px; color: #1c1c1e; }
+    /* ── CHATBOT ── */
+    #chat-window {
+        height: calc(100vh - 290px);
+        overflow-y: auto; background: #eae8e3;
+        border-radius: var(--radius); padding: 14px;
+        display: flex; flex-direction: column; gap: 10px;
+        border: 1px solid var(--border);
+    }
+    .msg { padding: 11px 14px; border-radius: 16px; font-size: 0.88rem; line-height: 1.5; max-width: 88%; }
+    .msg.bot { background: var(--surface); align-self: flex-start; border-bottom-left-radius: 4px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+    .msg.user { background: #d4f4c2; align-self: flex-end; border-bottom-right-radius: 4px; }
+    .msg.typing { background: var(--surface); align-self: flex-start; padding: 14px 18px; }
+    .dot-flashing { display: flex; gap: 5px; }
+    .dot-flashing span { width: 7px; height: 7px; background: #aaa; border-radius: 50%; animation: dotFlash 1.2s infinite; }
+    .dot-flashing span:nth-child(2) { animation-delay: 0.2s; }
+    .dot-flashing span:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes dotFlash { 0%,80%,100%{opacity:0.2;transform:scale(0.8)} 40%{opacity:1;transform:scale(1)} }
 
-        /* Detail View Layer */
-        .full-view {
-            position: fixed; top: 0; left: 100%; width: 100%; height: 100%;
-            background: var(--bg-ios); z-index: 5000; transition: transform 0.4s cubic-bezier(0.1, 0.7, 0.1, 1);
-            overflow-y: auto;
-        }
-        .full-view.open { transform: translateX(-100%); }
-        .top-bar-view { background: white; padding: 50px 20px 15px; display: flex; align-items: center; border-bottom: 1px solid #d1d1d6; }
-        .btn-back { color: var(--red-emergency); font-weight: 600; background: none; border: none; font-size: 1.1rem; }
+    .chat-input-row { display: flex; gap: 8px; margin-top: 12px; }
+    .chat-input-row input {
+        flex: 1; padding: 13px 16px; border-radius: 24px;
+        border: 1.5px solid var(--border); background: var(--surface);
+        font-family: inherit; font-size: 0.9rem; outline: none;
+        transition: border-color 0.2s;
+    }
+    .chat-input-row input:focus { border-color: var(--red); }
+    .chat-input-row button {
+        width: 48px; height: 48px; border-radius: 50%;
+        background: var(--red); border: none; cursor: pointer;
+        display: flex; align-items: center; justify-content: center;
+        transition: background 0.2s; flex-shrink: 0;
+    }
+    .chat-input-row button:active { background: var(--red-dark); }
+    .chat-input-row button svg { width: 20px; height: 20px; fill: white; }
 
-        /* Bottom Tab Bar */
-        .tab-bar {
-            position: fixed; bottom: 0; width: 100%; height: 90px;
-            background: rgba(255,255,255,0.92); backdrop-filter: blur(20px);
-            display: flex; justify-content: space-around; padding-top: 10px;
-            border-top: 0.5px solid #d1d1d6; z-index: 4000;
-        }
-        .tab-item { flex: 1; text-align: center; color: #8e8e93; font-size: 10px; font-weight: 500; text-decoration: none; }
-        .tab-item.active { color: var(--red-emergency); }
-        .tab-item i { font-size: 26px; display: block; margin-bottom: 4px; }
+    .quick-prompts { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
+    .quick-chip {
+        background: var(--surface); border: 1px solid var(--border);
+        border-radius: 20px; padding: 6px 12px; font-size: 0.75rem;
+        font-weight: 600; cursor: pointer; transition: all 0.15s; color: var(--red);
+    }
+    .quick-chip:active { background: var(--red-light); }
 
-        .section-title { font-size: 13px; font-weight: 600; color: #8e8e93; text-transform: uppercase; margin: 20px 0 10px 5px; }
-    </style>
+    /* ── DETAIL VIEW ── */
+    .full-view {
+        position: fixed; top: 0; left: 100%; width: 100%; height: 100%;
+        background: var(--bg); z-index: 5000;
+        transition: transform 0.38s cubic-bezier(0.4, 0, 0.2, 1);
+        overflow-y: auto;
+    }
+    .full-view.open { transform: translateX(-100%); }
+    .top-bar-view {
+        background: var(--surface); padding: 50px 20px 14px;
+        display: flex; align-items: center; gap: 12px;
+        border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 1;
+    }
+    .btn-back {
+        color: var(--red); font-weight: 700; background: none; border: none;
+        font-size: 1rem; display: flex; align-items: center; gap: 4px; cursor: pointer;
+    }
+    .detail-title { font-weight: 800; font-size: 1rem; }
+    .detail-body { padding: 20px; }
+    .detail-body h3 { font-size: 1.2rem; font-weight: 800; margin-bottom: 4px; }
+    .detail-body .subtitle { color: var(--muted); font-size: 0.8rem; margin-bottom: 20px; }
+    .proto-block {
+        background: var(--surface); border-radius: var(--radius);
+        padding: 16px 18px; margin-bottom: 12px;
+        border-left: 4px solid var(--red); box-shadow: var(--shadow);
+    }
+    .proto-block h5 { font-size: 0.9rem; font-weight: 700; margin-bottom: 8px; color: var(--red); }
+    .proto-block p, .proto-block li { font-size: 0.85rem; line-height: 1.6; color: #2c3e50; }
+    .proto-block ul, .proto-block ol { padding-left: 18px; }
+    .proto-block.green { border-left-color: var(--green); }
+    .proto-block.green h5 { color: var(--green); }
+    .proto-block.blue { border-left-color: var(--blue); }
+    .proto-block.blue h5 { color: var(--blue); }
+    .proto-block.amber { border-left-color: var(--amber); }
+    .proto-block.amber h5 { color: var(--amber); }
+    .alert-box {
+        background: #fef9e7; border: 1px solid #f9ca24;
+        border-radius: 10px; padding: 12px 14px; margin-bottom: 12px;
+        font-size: 0.82rem; line-height: 1.5;
+    }
+    .badge-tag {
+        display: inline-block; padding: 3px 8px; border-radius: 6px;
+        font-size: 0.7rem; font-weight: 700; margin: 2px; background: var(--red-light); color: var(--red);
+    }
+    table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+    th { background: var(--red); color: white; padding: 8px 10px; text-align: left; }
+    td { padding: 8px 10px; border-bottom: 1px solid var(--border); }
+    tr:nth-child(even) td { background: #fafafa; }
+
+    /* ── QUIZ ── */
+    .quiz-card {
+        background: var(--surface); border-radius: var(--radius);
+        padding: 24px; box-shadow: var(--shadow); border: 1px solid var(--border);
+    }
+    .quiz-progress { height: 4px; background: var(--border); border-radius: 2px; margin-bottom: 20px; overflow: hidden; }
+    .quiz-progress-fill { height: 100%; background: var(--red); border-radius: 2px; transition: width 0.4s; }
+    .quiz-meta { font-size: 0.75rem; color: var(--muted); margin-bottom: 8px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+    .quiz-question { font-size: 1rem; font-weight: 700; line-height: 1.5; margin-bottom: 20px; }
+    .quiz-options { display: grid; gap: 10px; }
+    .quiz-btn {
+        background: var(--bg); border: 2px solid var(--border);
+        border-radius: 12px; padding: 14px 16px;
+        font-family: inherit; font-size: 0.88rem; font-weight: 600;
+        text-align: left; cursor: pointer; transition: all 0.2s;
+        color: var(--text);
+    }
+    .quiz-btn:active { transform: scale(0.98); }
+    .quiz-btn.correct { background: #d5f5e3; border-color: var(--green); color: var(--green); }
+    .quiz-btn.wrong { background: #fde8e6; border-color: var(--red); color: var(--red); }
+    .quiz-explanation { margin-top: 14px; padding: 12px 14px; background: #eaf6ff; border-radius: 10px; font-size: 0.82rem; line-height: 1.5; border-left: 3px solid var(--blue); display: none; }
+    .quiz-next { width: 100%; margin-top: 14px; padding: 14px; background: var(--red); color: white; border: none; border-radius: 12px; font-family: inherit; font-size: 0.95rem; font-weight: 700; cursor: pointer; display: none; }
+    .quiz-score { text-align: center; padding: 20px 0; }
+    .quiz-score .score-num { font-size: 3.5rem; font-weight: 800; color: var(--red); line-height: 1; }
+    .quiz-score p { color: var(--muted); margin-top: 6px; }
+    .quiz-start { text-align: center; padding: 20px 0; }
+    .quiz-start .big-icon { font-size: 4rem; margin-bottom: 12px; }
+    .quiz-start h3 { font-size: 1.2rem; font-weight: 800; margin-bottom: 6px; }
+    .quiz-start p { color: var(--muted); font-size: 0.85rem; margin-bottom: 24px; }
+    .btn-start { background: var(--red); color: white; border: none; border-radius: 14px; padding: 16px 40px; font-family: inherit; font-size: 1rem; font-weight: 700; cursor: pointer; }
+
+    /* ── TAB BAR ── */
+    .tab-bar {
+        position: fixed; bottom: 0; width: 100%; height: 83px;
+        background: rgba(255,255,255,0.95); backdrop-filter: blur(20px);
+        display: flex; justify-content: space-around; padding: 10px 0 0;
+        border-top: 0.5px solid var(--border); z-index: 4000;
+    }
+    .tab-item { flex: 1; text-align: center; color: #9ca3af; font-size: 10px; font-weight: 600; text-decoration: none; display: flex; flex-direction: column; align-items: center; gap: 3px; }
+    .tab-item.active { color: var(--red); }
+    .tab-icon { font-size: 24px; line-height: 1; }
+</style>
+```
+
 </head>
 <body>
 
-<div id="splash"><img src="./IMG_4138.png" alt="RescuePro"></div>
+<!-- SPLASH -->
 
-<header class="header-app">RESCUEPRO MASTER 🚑</header>
+<div id="splash">
+    <img src="./IMG_4138.png" alt="RescuePro" onerror="this.style.display='none'">
+    <h1>🚑 RESCUEPRO MASTER</h1>
+    <p>Protocolli di Emergenza Professionale</p>
+    <div class="splash-bar"><div class="splash-bar-fill"></div></div>
+</div>
 
-<main id="view-home" class="view container-fluid">
-    <div class="section-title">Manuali Operativi</div>
-    <div class="card-rescue" onclick="openDetail('abcde')">
-        <h6 class="fw-bold">Protocollo ABCDE & Parametri</h6>
-        <p class="small text-muted m-0">Approccio sistematico al paziente critico.</p>
-    </div>
-    <div class="card-rescue" onclick="openDetail('blsd')" style="--red-emergency: var(--green-triage);">
-        <h6 class="fw-bold">BLSD & PBLSD 2026</h6>
-        <p class="small text-muted m-0">Rianimazione adulto e pediatrico professionale.</p>
-    </div>
-    <div class="card-rescue" onclick="openDetail('trauma')" style="--red-emergency: var(--blue-clinical);">
-        <h6 class="fw-bold">Trauma & Estricazione (KED)</h6>
-        <p class="small m-0 text-muted">Gestione presidi e immobilizzazione.</p>
-    </div>
-    <div class="card-rescue" onclick="openDetail('clinica')" style="--red-emergency: #b8860b;">
-        <h6 class="fw-bold">Emergenze Mediche & Cliniche</h6>
-        <p class="small m-0 text-muted">Ictus, Infarto, Convulsioni, Ipoglicemia.</p>
-    </div>
-</main>
+<!-- HEADER -->
 
-<main id="view-chat" class="view container-fluid d-none">
-    <div id="chat-window">
-        <div class="msg bot"><b>ASSISTENTE OPERATIVO ATTIVO.</b><br>Chiedimi qualsiasi cosa: manovre, dosaggi, scale, presidi o patologie. Rispondo con protocolli completi.</div>
-    </div>
-    <div class="input-group mt-3">
-        <input type="search" id="user-input" class="form-control form-control-lg border-0 shadow-sm" style="border-radius: 12px 0 0 12px;" placeholder="Scrivi qui...">
-        <button class="btn btn-danger px-4" style="border-radius: 0 12px 12px 0;" onclick="handleChat()">CERCA</button>
-    </div>
-</main>
+<header class="header-app">
+    <h1>🚑 RescuePro Master</h1>
+    <span class="header-badge">v6.0 AI</span>
+</header>
 
-<main id="view-quiz" class="view container-fluid d-none">
-    <div class="card-rescue p-5 text-center">
-        <h4 id="q-text" class="fw-bold">Pronto per la Simulazione?</h4>
-        <div id="q-box" class="mt-4 d-grid gap-3">
-            <button class="btn btn-danger btn-lg shadow" onclick="initQuiz()">Inizia Test (10 Domande)</button>
+<!-- HOME -->
+
+<main id="view-home" class="view">
+    <div class="section-title">Protocolli Principali</div>
+    <div class="card-grid">
+        <div class="card-rescue" onclick="openDetail('abcde')">
+            <div class="accent-bar" style="background:var(--red)"></div>
+            <span class="card-icon">🔴</span>
+            <h6>ABCDE & Parametri</h6>
+            <p>Approccio sistematico paziente critico</p>
+        </div>
+        <div class="card-rescue" onclick="openDetail('blsd')">
+            <div class="accent-bar" style="background:var(--green)"></div>
+            <span class="card-icon">💚</span>
+            <h6>BLSD & PBLSD 2026</h6>
+            <p>RCP adulto e pediatrico aggiornato</p>
+        </div>
+        <div class="card-rescue" onclick="openDetail('trauma')">
+            <div class="accent-bar" style="background:var(--blue)"></div>
+            <span class="card-icon">🔵</span>
+            <h6>Trauma & KED</h6>
+            <p>Estricazione e immobilizzazione</p>
+        </div>
+        <div class="card-rescue" onclick="openDetail('clinica')">
+            <div class="accent-bar" style="background:var(--amber)"></div>
+            <span class="card-icon">🟡</span>
+            <h6>Emergenze Mediche</h6>
+            <p>Ictus, Infarto, Crisi, Diabete</p>
         </div>
     </div>
+
+```
+<div class="section-title">Protocolli Speciali</div>
+<div class="card-wide" onclick="openDetail('triage')">
+    <span class="w-icon">🔺</span>
+    <div><h6>Triage START & CESIRA</h6><p>Maxi-emergenza e criteri di priorità</p></div>
+    <span class="chevron">›</span>
+</div>
+<div class="card-wide" onclick="openDetail('parto')">
+    <span class="w-icon">👶</span>
+    <div><h6>Parto d'Emergenza & APGAR</h6><p>Gestione parto extraospedaliero</p></div>
+    <span class="chevron">›</span>
+</div>
+<div class="card-wide" onclick="openDetail('pediatria')">
+    <span class="w-icon">🍼</span>
+    <div><h6>Pediatria & Neonatale</h6><p>Dosi, misure, specificità pediatriche</p></div>
+    <span class="chevron">›</span>
+</div>
+<div class="card-wide" onclick="openDetail('farmaci')">
+    <span class="w-icon">💊</span>
+    <div><h6>Farmaci & Presidi</h6><p>Ossigeno, Glucosio, Adrenalina</p></div>
+    <span class="chevron">›</span>
+</div>
+<div class="card-wide" onclick="openDetail('scale')">
+    <span class="w-icon">📊</span>
+    <div><h6>Scale di Valutazione</h6><p>GCS, AVPU, FAST, NEWS, Cincinati</p></div>
+    <span class="chevron">›</span>
+</div>
+```
+
 </main>
+
+<!-- CHAT -->
+
+<main id="view-chat" class="view d-none">
+    <div class="quick-prompts">
+        <span class="quick-chip" onclick="sendQuick('Come si esegue la RCP?')">💓 RCP</span>
+        <span class="quick-chip" onclick="sendQuick('Protocollo ABCDE')">🔴 ABCDE</span>
+        <span class="quick-chip" onclick="sendQuick('Segni di ictus FAST')">🧠 Ictus</span>
+        <span class="quick-chip" onclick="sendQuick('Come si usa il KED?')">🚗 KED</span>
+        <span class="quick-chip" onclick="sendQuick('Triage START')">🔺 Triage</span>
+        <span class="quick-chip" onclick="sendQuick('Scale GCS e AVPU')">📊 Scale</span>
+    </div>
+    <div id="chat-window">
+        <div class="msg bot"><b>🤖 Assistente AI Attivo</b><br>Sono alimentato da Claude AI. Chiedimi qualsiasi cosa su manovre, protocolli, dosaggi, scale di valutazione o patologie emergenziali. Rispondo con protocolli completi e aggiornati.</div>
+    </div>
+    <div class="chat-input-row">
+        <input type="search" id="user-input" placeholder="Scrivi la tua domanda..." autocomplete="off" onkeydown="if(event.key==='Enter') handleChat()">
+        <button onclick="handleChat()">
+            <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+        </button>
+    </div>
+</main>
+
+<!-- QUIZ -->
+
+<main id="view-quiz" class="view d-none">
+    <div id="quiz-container"></div>
+</main>
+
+<!-- DETAIL LAYER -->
 
 <div id="detail-layer" class="full-view">
     <div class="top-bar-view">
-        <button class="btn-back" onclick="closeDetail()">✕ Chiudi Manuale</button>
+        <button class="btn-back" onclick="closeDetail()">‹ Indietro</button>
+        <span class="detail-title" id="detail-title"></span>
     </div>
-    <div id="detail-content" class="p-4"></div>
+    <div class="detail-body" id="detail-content"></div>
 </div>
 
+<!-- TAB BAR -->
+
 <nav class="tab-bar">
-    <a href="#" class="tab-item active" onclick="switchTab('home', this)"><i>📖</i>Protocolli</a>
-    <a href="#" class="tab-item" onclick="switchTab('chat', this)"><i>🤖</i>Chatbot</a>
-    <a href="#" class="tab-item" onclick="switchTab('quiz', this)"><i>✏️</i>Simulazione</a>
+    <a href="#" class="tab-item active" onclick="switchTab('home',this)"><span class="tab-icon">📖</span>Protocolli</a>
+    <a href="#" class="tab-item" onclick="switchTab('chat',this)"><span class="tab-icon">🤖</span>AI Chat</a>
+    <a href="#" class="tab-item" onclick="switchTab('quiz',this)"><span class="tab-icon">✏️</span>Quiz</a>
 </nav>
 
 <script>
-    // DATABASE CHATBOT ENCICLOPEDICO (Espanso e Ottimizzato)
-    const engineDB = [
-        { tags: ["dae", "defibrillatore", "scarica", "piastre"], text: "<b>DAE:</b> 1. Accensione. 2. Applicazione piastre (Sotto clavicola DX / Linea ascellare SX). 3. Allontanare tutti per Analisi. 4. Premere Scarica se indicato. 5. RCP immediata." },
-        { tags: ["blsd", "rcp", "rianimazione", "massaggio"], text: "<b>RCP ADULTO:</b> Rapporto 30:2. Freq 100-120/min. Profondità 5-6 cm. <b>PEDIATRICO:</b> 5 ventilazioni iniziali, poi 15:2 (se 2 socc.) o 30:2 (laico)." },
-        { tags: ["abcde", "valutazione", "primaria", "opacs"], text: "<b>ABCDE:</b> A(Vie aeree, rachide), B(Respiro - OPACS, Sat >94%), C(Circolo - Polso radiale, emorragie X), D(Neurologico - GCS, Pupille, Glicemia), E(Ambiente/Ipotermia)." },
-        { tags: ["ked", "estricatore", "auto"], text: "<b>KED:</b> Manovra a 2 soccorritori. Lacci: Giallo-Medio, Rosso-Inferiore, Verde-Superiore (G.R.V.). Poi inguinali e infine Testa." },
-        { tags: ["ictus", "fast", "stroke"], text: "<b>ICTUS (FAST):</b> Facial drooping (asimmetria), Arm weakness (caduta braccio), Speech difficulty (parola), Time (Insorgenza). Trasporto immediato." },
-        { tags: ["parto", "apgar", "neonato"], text: "<b>PARTO:</b> Valuta premiti. Preparazione kit. Asciugare e scaldare neonato. <b>APGAR:</b> Punteggio (0-10) a 1 e 5 min su Colore, Battito, Riflessi, Tono, Respiro." },
-        { tags: ["start", "triage", "maxi"], text: "<b>START Triage:</b> Cammina?(Verde). Respira?(No->Nero, Si->R se >30). Polso?(No->R). Comandi?(No->R, Si->Giallo)." },
-        { tags: ["ustioni", "9", "wallace"], resp: "<b>USTIONI:</b> Raffredda 20m. Regola del 9: Capo 9, Braccia 9 cad, Gambe 18 cad, Tronco Ant/Post 18 cad, Genitali 1." },
-        { tags: ["gcs", "glasgow"], text: "<b>GCS:</b> Occhi (4), Verbale (5), Motoria (6). Sotto 9 = Grave/Coma. Minimo 3." },
-        { tags: ["heimlich", "ostruzione", "soffocamento"], text: "<b>OSTRUZIONE:</b> Parziale (incoraggia tosse). Totale: 5 colpi dorsali + 5 compressioni Heimlich. Lattante: 5 dorsali + 5 toraciche." },
-        { tags: ["pneumotorace", "pnx", "respiro"], text: "<b>PNX IPERTESO:</b> Deviazione trachea, turgore giugulari, assenza MV unilaterale, ipotensione. Emergenza assoluta." }
-    ];
+// ── SPLASH ──
+window.onload = () => {
+    setTimeout(() => {
+        document.getElementById('splash').style.opacity = '0';
+        setTimeout(() => document.getElementById('splash').remove(), 600);
+    }, 1800);
+    renderQuizStart();
+};
 
-    // DATABASE DETTAGLI MANUALI
-    const manualDB = {
-        abcde: "<h3>ABCDE Avanzato</h3><hr><p><b>A (Airway):</b> Gestione vie aeree e stabilità cervicale manuale. Controllo corpi estranei.</p><p><b>B (Breathing):</b> Valutazione <b>OPACS</b> (Osserva, Palpa, Ascolta, Conta, Satura). Atti: 12-20/min.</p><p><b>C (Circulation):</b> X(Emorragie massive), Polso, Riempimento (<2s), Cute(Colore, Temp, Umidità).</p><p><b>D (Disability):</b> GCS, Pupille (P.I.R.), AVPU, Glicemia.</p><p><b>E (Exposure):</b> Ricerca lesioni occulte, prevenzione ipotermia con coperta isotermica.</p>",
-        trauma: "<h3>Gestione Trauma</h3><hr><p><b>Spinalizzazione:</b> Applicazione collare (misura trapezio-mento). Uso Barella a Cucchiaio o Log-Roll su Tavola Spinale. Fissaggio: Ragno + Fermacapo.</p><p><b>KED:</b> Estrattore per pazienti stabili in veicolo. Sequenza: Lacci Torace, Lacci Inguinali, Testa.</p>",
-        blsd: "<h3>Rianimazione 2026</h3><hr><p><b>GAS:</b> Guardo, Ascolto, Sento (max 10 sec).<br><b>RCP:</b> 30:2 adulto. Ventilazioni con pocket mask o pallone AMBU con O2.<br><b>DAE:</b> Analisi ogni 2 min.</p>",
-        clinica: "<h3>Emergenze Mediche</h3><hr><p><b>SCA:</b> Sindrome Coronarica. Dolore oppressivo, irradiato. Posizione semiseduta.<br><b>EPILESSIA:</b> Proteggi capo, non inserire nulla in bocca, PLS a fine crisi.<br><b>DIABETE:</b> Ipoglicemia (<60 mg/dl). Somministrare zucchero se conscio.</p>"
-    };
+// ── TAB NAV ──
+function switchTab(id, el) {
+    document.querySelectorAll('.view').forEach(v => v.classList.add('d-none'));
+    document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
+    document.getElementById('view-' + id).classList.remove('d-none');
+    el.classList.add('active');
+}
 
-    // LOGICA FUNZIONALE
-    window.onload = () => { setTimeout(() => { document.getElementById('splash').style.opacity = '0'; setTimeout(() => document.getElementById('splash').style.display = 'none', 500); }, 1500); };
-
-    function switchTab(id, el) {
-        document.querySelectorAll('.view').forEach(v => v.classList.add('d-none'));
-        document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
-        document.getElementById('view-' + id).classList.remove('d-none');
-        el.classList.add('active');
+// ── DETAIL LAYER ──
+const manualDB = {
+    abcde: {
+        title: "Protocollo ABCDE",
+        html: `
+        <h3>Valutazione ABCDE</h3>
+        <p class="subtitle">Approccio sistematico al paziente critico – aggiornato ERC 2021</p>
+        <div class="alert-box">⚠️ Applica sempre la sequenza in ordine. Ogni problema trovato va trattato PRIMA di passare al successivo.</div>
+        <div class="proto-block">
+            <h5>A — Airway (Vie Aeree)</h5>
+            <ul>
+                <li>Stabilizzazione manuale del rachide cervicale se trauma</li>
+                <li>Verifica pervietà: Guarda-Ascolta-Senti</li>
+                <li>Rimozione corpi estranei visibili (non alla cieca)</li>
+                <li>Manovre: iperestensione del capo, sublussazione mandibola</li>
+                <li>Posizione laterale di sicurezza se non trauma e incosciente</li>
+            </ul>
+        </div>
+        <div class="proto-block green">
+            <h5>B — Breathing (Respiro)</h5>
+            <p><b>Metodo OPACS:</b></p>
+            <ul>
+                <li><b>O</b>sserva: espansione toracica, FR normale 12-20/min</li>
+                <li><b>P</b>alpa: simmetria, crepitii, enfisema sottocutaneo</li>
+                <li><b>A</b>scolta: murmure vescicolare bilaterale</li>
+                <li><b>C</b>onta: frequenza respiratoria</li>
+                <li><b>S</b>atura: SpO₂ target >94% (>88% BPCO)</li>
+            </ul>
+            <p style="margin-top:8px">Somministra O₂ se SpO₂ &lt;94% o distress respiratorio.</p>
+        </div>
+        <div class="proto-block blue">
+            <h5>C — Circulation (Circolo)</h5>
+            <ul>
+                <li><b>X</b>: Controllo emorragie massive (compressione diretta, laccio emostatico)</li>
+                <li>Polso radiale presente = PA sistolica >80 mmHg</li>
+                <li>Polso carotideo presente = PA sistolica >60 mmHg</li>
+                <li>Riempimento capillare: normale &lt;2 secondi</li>
+                <li>Cute: Colore, Temperatura, Umidità</li>
+            </ul>
+        </div>
+        <div class="proto-block amber">
+            <h5>D — Disability (Neurologico)</h5>
+            <ul>
+                <li>GCS: Occhi (1-4) + Verbale (1-5) + Motoria (1-6) = max 15</li>
+                <li>AVPU: Alert / Voice / Pain / Unresponsive</li>
+                <li>Pupille: P.I.R. (Pupille Isocoriche Reattive)</li>
+                <li>Glicemia: normale 70-140 mg/dl</li>
+                <li>Segni di lato, asimmetrie, convulsioni</li>
+            </ul>
+        </div>
+        <div class="proto-block">
+            <h5>E — Exposure (Esposizione)</h5>
+            <ul>
+                <li>Esposizione completa del paziente (rispettare privacy)</li>
+                <li>Ricerca lesioni occulte: dorso, ascelle, inguine, perineo</li>
+                <li>Prevenzione ipotermia: coperta isotermica argentata</li>
+                <li>Temperatura corporea: normale 36-37.5°C</li>
+            </ul>
+        </div>
+        <div class="proto-block">
+            <h5>Parametri Vitali Normali</h5>
+            <table>
+                <tr><th>Parametro</th><th>Adulto</th><th>Pediatrico (2-12a)</th></tr>
+                <tr><td>FC</td><td>60-100 bpm</td><td>80-120 bpm</td></tr>
+                <tr><td>FR</td><td>12-20 /min</td><td>20-30 /min</td></tr>
+                <tr><td>SpO₂</td><td>&gt;94%</td><td>&gt;94%</td></tr>
+                <tr><td>PA Sistolica</td><td>90-140 mmHg</td><td>80-110 mmHg</td></tr>
+                <tr><td>Glicemia</td><td>70-140 mg/dl</td><td>70-140 mg/dl</td></tr>
+                <tr><td>Temp</td><td>36-37.5°C</td><td>36-37.5°C</td></tr>
+            </table>
+        </div>`
+    },
+    blsd: {
+        title: "BLSD & PBLSD",
+        html: `
+        <h3>Rianimazione BLSD 2026</h3>
+        <p class="subtitle">Linee guida ERC aggiornate – Adulto e Pediatrico</p>
+        <div class="alert-box">⚠️ Chiama il 118 PRIMA di iniziare la RCP se sei solo. Se in 2: uno inizia RCP, uno chiama.</div>
+        <div class="proto-block">
+            <h5>Catena della Sopravvivenza</h5>
+            <p>1️⃣ Riconoscimento precoce → 2️⃣ RCP precoce → 3️⃣ DAE precoce → 4️⃣ ALS precoce → 5️⃣ Post-rianimazione</p>
+        </div>
+        <div class="proto-block green">
+            <h5>Valutazione iniziale – GAS (max 10 sec)</h5>
+            <ul>
+                <li><b>G</b>uardo: espansione toracica</li>
+                <li><b>A</b>scolta: rumori respiratori</li>
+                <li><b>S</b>ento: flusso d'aria su guancia</li>
+            </ul>
+            <p>Se assente: INIZIO RCP IMMEDIATO</p>
+        </div>
+        <div class="proto-block">
+            <h5>RCP Adulto</h5>
+            <ul>
+                <li>Rapporto: <b>30 compressioni : 2 ventilazioni</b></li>
+                <li>Frequenza: 100-120 compressioni/min</li>
+                <li>Profondità: 5-6 cm (non oltre 6 cm)</li>
+                <li>Rilascio completo del torace senza sollevare le mani</li>
+                <li>Punto: centro sterno, tallone del palmo</li>
+                <li>Ventilazioni: 1 secondo caduna, torace si solleva</li>
+            </ul>
+        </div>
+        <div class="proto-block blue">
+            <h5>RCP Pediatrico (1-8 anni)</h5>
+            <ul>
+                <li><b>5 ventilazioni iniziali di soccorso</b></li>
+                <li>Rapporto: <b>15:2</b> (2 soccorritori BLS) o 30:2 (laico/1 socc.)</li>
+                <li>Profondità: 1/3 del diametro toracico</li>
+                <li>1-2 dita sopra il processo xifoideo</li>
+                <li>Una mano (piccoli) o 2 dita (lattante, 2 pollici)</li>
+            </ul>
+        </div>
+        <div class="proto-block amber">
+            <h5>Lattante (&lt;1 anno)</h5>
+            <ul>
+                <li>5 ventilazioni iniziali (bocca-bocca+naso)</li>
+                <li>Compressioni: 2 dita o tecnica 2 pollici (2 socc.)</li>
+                <li>Punto: centro torace, sotto la linea intermammaria</li>
+                <li>Profondità: ~4 cm</li>
+                <li>Rapporto: 30:2 o 15:2</li>
+            </ul>
+        </div>
+        <div class="proto-block">
+            <h5>DAE – Defibrillatore</h5>
+            <ul>
+                <li>Accensione appena disponibile</li>
+                <li>Piastre: sotto clavicola DX + linea ascellare media SX</li>
+                <li>Pediatrico &lt;8 anni: attenuatore di energia o piastre pediatriche</li>
+                <li>Allontanare tutti per l'analisi: "Via da paziente!"</li>
+                <li>Scarica se indicata → RCP immediata 2 minuti senza verificare polso</li>
+            </ul>
+        </div>`
+    },
+    trauma: {
+        title: "Trauma & Estricazione",
+        html: `
+        <h3>Gestione del Trauma</h3>
+        <p class="subtitle">Spinalizzazione, KED, immobilizzazione</p>
+        <div class="proto-block">
+            <h5>Collare Cervicale</h5>
+            <ul>
+                <li>Misura: distanza trapezio-mento del paziente</li>
+                <li>Mantenere trazione assiale durante l'applicazione</li>
+                <li>Controllare polsi, sensibilità, mobilità PRIMA e DOPO</li>
+                <li>Non applicare se resistenza o dolore all'allineamento</li>
+            </ul>
+        </div>
+        <div class="proto-block blue">
+            <h5>KED – Estricatore Vertebrale</h5>
+            <p>Per pazienti stabili intrappolati in veicolo</p>
+            <ol>
+                <li>Stabilizzazione manuale rachide (durante tutta la manovra)</li>
+                <li>Applicazione collare cervicale</li>
+                <li>Inserimento KED posteriore</li>
+                <li><b>Laccio Giallo</b> (Medio) – primo da stringere</li>
+                <li><b>Laccio Rosso</b> (Inferiore) – secondo</li>
+                <li>Lacci inguinali</li>
+                <li><b>Laccio Verde</b> (Superiore) – terzo ✓ G.R.V.</li>
+                <li>Imbottitura occipitale se necessario</li>
+                <li>Fissaggio testa con fasce</li>
+                <li>Rotazione e posizionamento su tavola spinale</li>
+            </ol>
+            <p style="margin-top:8px">⚠️ In paziente instabile: estricazione rapida in 3 operatori</p>
+        </div>
+        <div class="proto-block green">
+            <h5>Barella a Cucchiaio</h5>
+            <ul>
+                <li>Log Roll minimo 3-4 operatori</li>
+                <li>1 operatore: testa e comando "uno-due-tre-gira"</li>
+                <li>Regolare lunghezza prima dell'inserimento</li>
+                <li>Unire le valve lateralmente</li>
+                <li>Fissaggio con ragno (spider strap) e fermacapo</li>
+            </ul>
+        </div>
+        <div class="proto-block amber">
+            <h5>Laccio Emostatico (CAT / Tourniquet)</h5>
+            <ul>
+                <li>Indicazione: emorragia massiva arti non controllabile con compressione</li>
+                <li>Posizionamento: 5-7 cm sopra la ferita</li>
+                <li>Stringere fino all'arresto del sanguinamento</li>
+                <li>Segnare l'orario di applicazione sul presidio</li>
+                <li>Non rimuovere mai in ambiente preospedaliero</li>
+            </ul>
+        </div>
+        <div class="proto-block">
+            <h5>Ustioni – Regola del 9 (Wallace)</h5>
+            <table>
+                <tr><th>Area</th><th>Adulto</th></tr>
+                <tr><td>Capo e collo</td><td>9%</td></tr>
+                <tr><td>Braccio (ciascuno)</td><td>9%</td></tr>
+                <tr><td>Tronco anteriore</td><td>18%</td></tr>
+                <tr><td>Tronco posteriore</td><td>18%</td></tr>
+                <tr><td>Gamba (ciascuna)</td><td>18%</td></tr>
+                <tr><td>Genitali</td><td>1%</td></tr>
+            </table>
+            <p style="margin-top:8px">Trattamento: raffredda con acqua tiepida (15°C) per 20 min. Non ghiaccio.</p>
+        </div>`
+    },
+    clinica: {
+        title: "Emergenze Mediche",
+        html: `
+        <h3>Emergenze Mediche & Cliniche</h3>
+        <p class="subtitle">Protocolli diagnostici e intervento preospedaliero</p>
+        <div class="proto-block">
+            <h5>SCA – Sindrome Coronarica Acuta</h5>
+            <ul>
+                <li>Dolore toracico oppressivo, irradiato braccio/mandibola/epigastrio</li>
+                <li>Diaforesi, nausea, dispnea, ansia, sincope</li>
+                <li>Posizione: semiseduta o supina se ipotensione</li>
+                <li>O₂ solo se SpO₂ &lt;90%</li>
+                <li>Monitoraggio continuo FC e SpO₂</li>
+                <li>Trasporto urgente con preallerta ospedale</li>
+            </ul>
+        </div>
+        <div class="proto-block green">
+            <h5>ICTUS – Scala FAST+</h5>
+            <ul>
+                <li><b>F</b>ace: asimmetria del viso (sorriso)</li>
+                <li><b>A</b>rm: caduta del braccio sollevato</li>
+                <li><b>S</b>peech: parola incomprensibile o assente</li>
+                <li><b>T</b>ime: insorgenza (FINESTRA TERAPEUTICA 4.5h)</li>
+                <li>+ Disturbi visivi, cefalea improvvisa, vertigini</li>
+            </ul>
+            <p style="margin-top:8px">⏱️ "Time is Brain": ogni minuto = 1.9 milioni neuroni persi</p>
+        </div>
+        <div class="proto-block blue">
+            <h5>EPILESSIA – Crisi Convulsiva</h5>
+            <ul>
+                <li>Proteggi capo, rimuovi oggetti pericolosi</li>
+                <li>Non immobilizzare, non inserire nulla in bocca</li>
+                <li>Monitorare durata (oltre 5 min = status epilepticus)</li>
+                <li>Post-critica: posizione laterale di sicurezza</li>
+                <li>Valuta glicemia (crisi può essere da ipoglicemia)</li>
+            </ul>
+        </div>
+        <div class="proto-block amber">
+            <h5>DIABETE – Ipoglicemia</h5>
+            <ul>
+                <li>Glicemia &lt;70 mg/dl: ipoglicemia lieve/moderata</li>
+                <li>Glicemia &lt;50 mg/dl: ipoglicemia severa</li>
+                <li>Sintomi: tremore, sudorazione, confusione, aggressività</li>
+                <li>Paziente cosciente: zucchero per os, succhi, glucosio</li>
+                <li>Paziente incosciente: posizione laterale, trasporto urgente</li>
+            </ul>
+        </div>
+        <div class="proto-block">
+            <h5>ANAFILASSI</h5>
+            <ul>
+                <li>Reazione allergica sistemica grave: orticaria, edema, broncospasmo, ipotensione</li>
+                <li>Posizione: supina con gambe elevate (o semiseduta se dispnea)</li>
+                <li>O₂ ad alti flussi</li>
+                <li>Farmaco: Adrenalina IM 0.5 mg (0.01 mg/kg pediatrico) in coscia esterna</li>
+                <li>Trasporto urgente</li>
+            </ul>
+        </div>`
+    },
+    triage: {
+        title: "Triage START",
+        html: `
+        <h3>Triage di Maxiemergenza</h3>
+        <p class="subtitle">START – Simple Triage And Rapid Treatment</p>
+        <div class="proto-block">
+            <h5>Algoritmo START</h5>
+            <ol>
+                <li><b>CAMMINA?</b> Sì → <span class="badge-tag" style="background:#d5f5e3;color:#1e8449">VERDE</span></li>
+                <li><b>RESPIRA?</b> No (dopo apertura vie aeree) → <span class="badge-tag" style="background:#333;color:#fff">NERO</span></li>
+                <li><b>FR?</b> >30/min → <span class="badge-tag" style="background:#fde8e6;color:#c0392b">ROSSO</span></li>
+                <li><b>POLSO RADIALE?</b> Assente → <span class="badge-tag" style="background:#fde8e6;color:#c0392b">ROSSO</span></li>
+                <li><b>SEGUE COMANDI?</b> No → <span class="badge-tag" style="background:#fde8e6;color:#c0392b">ROSSO</span> | Sì → <span class="badge-tag" style="background:#fef9e7;color:#d68910">GIALLO</span></li>
+            </ol>
+        </div>
+        <div class="proto-block green">
+            <h5>Codici Colore</h5>
+            <table>
+                <tr><th>Colore</th><th>Priorità</th><th>Condizione</th></tr>
+                <tr><td>🔴 Rosso</td><td>1 – Immediata</td><td>Rischio vita immediato, trattabile</td></tr>
+                <tr><td>🟡 Giallo</td><td>2 – Urgente</td><td>Grave ma stabile al momento</td></tr>
+                <tr><td>🟢 Verde</td><td>3 – Differibile</td><td>Ferite lievi, deambula</td></tr>
+                <tr><td>⚫ Nero</td><td>0 – Deceduto</td><td>Non respira (dopo manovra)</td></tr>
+            </table>
+        </div>
+        <div class="proto-block blue">
+            <h5>CESIRA – Codici comunicazione 118</h5>
+            <ul>
+                <li><b>C</b>osa è successo (dinamica)</li>
+                <li><b>E</b>satto luogo (indirizzo preciso)</li>
+                <li><b>S</b>everità (numero feriti, gravità)</li>
+                <li><b>I</b>nformazioni (accesso, pericoli)</li>
+                <li><b>R</b>ichiesta (mezzi necessari)</li>
+                <li><b>A</b>ltro (informazioni aggiuntive)</li>
+            </ul>
+        </div>`
+    },
+    parto: {
+        title: "Parto d'Emergenza",
+        html: `
+        <h3>Parto Extraospedaliero</h3>
+        <p class="subtitle">Gestione del parto d'emergenza e valutazione neonatale</p>
+        <div class="proto-block">
+            <h5>Valutazione iniziale</h5>
+            <ul>
+                <li>Settimane di gestazione (≥37 = termine)</li>
+                <li>Frequenza e durata contrazioni</li>
+                <li>Rottura acque (liquido limpido, torbido, meconiale?)</li>
+                <li>Presentazione: cefalica o podalica?</li>
+                <li>Tempo all'arrivo ospedale vs imminenza parto</li>
+            </ul>
+        </div>
+        <div class="proto-block green">
+            <h5>Conduzione del Parto</h5>
+            <ol>
+                <li>Preparare kit parto sterile</li>
+                <li>Paziente in posizione supina o semiseduta</li>
+                <li>Guidare lentamente la testa del neonato</li>
+                <li>Controllare presenza di circolari al collo (sfilare)</li>
+                <li>Accompagnare la fuoriuscita delle spalle</li>
+                <li>Asciugare e stimolare il neonato</li>
+                <li>Clampare cordone a 2 cm (2 clamp, taglia tra loro)</li>
+                <li>Attendere secondamento (placenta entro 30 min)</li>
+            </ol>
+        </div>
+        <div class="proto-block amber">
+            <h5>Score APGAR (a 1 e 5 minuti)</h5>
+            <table>
+                <tr><th>Parametro</th><th>0</th><th>1</th><th>2</th></tr>
+                <tr><td>Colore</td><td>Cianotico</td><td>Acrocianosi</td><td>Roseo</td></tr>
+                <tr><td>FC</td><td>Assente</td><td>&lt;100</td><td>≥100</td></tr>
+                <tr><td>Riflessi</td><td>Assenti</td><td>Smorfie</td><td>Pianto</td></tr>
+                <tr><td>Tono</td><td>Flaccido</td><td>Flessione</td><td>Attivo</td></tr>
+                <tr><td>Respiro</td><td>Assente</td><td>Irregolare</td><td>Pianto</td></tr>
+            </table>
+            <p style="margin-top:8px">7-10 = Normale | 4-6 = Depressione moderata | &lt;4 = Grave</p>
+        </div>`
+    },
+    pediatria: {
+        title: "Pediatria",
+        html: `
+        <h3>Specificità Pediatriche</h3>
+        <p class="subtitle">Parametri, dosi e particolarità per età</p>
+        <div class="proto-block">
+            <h5>Parametri per età</h5>
+            <table>
+                <tr><th>Età</th><th>FC (bpm)</th><th>FR (/min)</th><th>PA sist</th></tr>
+                <tr><td>Neonato</td><td>120-160</td><td>40-60</td><td>60-90</td></tr>
+                <tr><td>Lattante</td><td>100-150</td><td>30-40</td><td>80-100</td></tr>
+                <tr><td>Bambino 2-5a</td><td>90-120</td><td>25-30</td><td>90-100</td></tr>
+                <tr><td>Bambino 6-12a</td><td>75-110</td><td>20-25</td><td>100-110</td></tr>
+                <tr><td>Adolescente</td><td>60-100</td><td>15-20</td><td>110-130</td></tr>
+            </table>
+        </div>
+        <div class="proto-block blue">
+            <h5>Formula peso stimato (Broselow)</h5>
+            <p>Peso (kg) = <b>(età in anni × 2) + 8</b><br>
+            Oppure usa il nastro Broselow per taglia/peso.</p>
+        </div>
+        <div class="proto-block amber">
+            <h5>Ostruzione vie aeree – Lattante</h5>
+            <ul>
+                <li>5 colpi dorsali tra le scapole (posizione prona sull'avambraccio)</li>
+                <li>5 compressioni toraciche (2 dita, sterno)</li>
+                <li>Alternare fino alla risoluzione o perdita di coscienza</li>
+                <li>Se incosciente: RCP con ispezione del cavo orale prima di ventilare</li>
+            </ul>
+        </div>`
+    },
+    farmaci: {
+        title: "Farmaci & Presidi",
+        html: `
+        <h3>Farmaci e Presidi in Emergenza</h3>
+        <p class="subtitle">Indicazioni, dosi e modalità di utilizzo</p>
+        <div class="alert-box">⚠️ I dosaggi indicati sono indicativi. Seguire sempre i protocolli locali e le indicazioni del medico 118.</div>
+        <div class="proto-block">
+            <h5>Ossigeno (O₂)</h5>
+            <table>
+                <tr><th>Presidio</th><th>FiO₂</th><th>Flusso</th></tr>
+                <tr><td>Occhialini nasali</td><td>~30-40%</td><td>2-4 L/min</td></tr>
+                <tr><td>Maschera semplice</td><td>~40-60%</td><td>5-10 L/min</td></tr>
+                <tr><td>Maschera Venturi</td><td>24-60%</td><td>variabile</td></tr>
+                <tr><td>Maschera Reservoir</td><td>~90-95%</td><td>10-15 L/min</td></tr>
+                <tr><td>AMBU con reservoir</td><td>~100%</td><td>10-15 L/min</td></tr>
+            </table>
+        </div>
+        <div class="proto-block green">
+            <h5>Glucosio 33% (Destrosio)</h5>
+            <ul>
+                <li>Indicazione: ipoglicemia severa &lt;50 mg/dl, paziente non collaborante</li>
+                <li>Dose adulto: 50 ml EV (via accesso venoso)</li>
+                <li>Dose pediatrica: 2 ml/kg di glucosio 10%</li>
+                <li>Controllare glicemia dopo 10-15 minuti</li>
+            </ul>
+        </div>
+        <div class="proto-block">
+            <h5>Adrenalina (Epinefrina)</h5>
+            <ul>
+                <li>Anafilassi: 0.5 mg IM (adulto) – 0.01 mg/kg IM (pediatrico)</li>
+                <li>Sede: faccia anterolaterale coscia (vasto laterale)</li>
+                <li>Arresto cardiaco (ALS): 1 mg EV ogni 3-5 min</li>
+                <li>Auto-iniettore (EpiPen): 0.3 mg adulto / 0.15 mg bambino</li>
+            </ul>
+        </div>
+        <div class="proto-block blue">
+            <h5>Presidi Principali</h5>
+            <ul>
+                <li><b>Cannula orofaringea (Guedel)</b>: solo in paziente incosciente senza riflesso faringeo</li>
+                <li><b>Pocket Mask</b>: ventilazione con O₂ supplementare</li>
+                <li><b>AMBU</b>: adulto 500-600 ml per atto (visibile sollevamento torace)</li>
+                <li><b>DAE</b>: piastre standard adulto >25 kg, pediatriche &lt;25 kg</li>
+                <li><b>Aspiratore</b>: max 15 sec per aspirazione, poi riventila</li>
+            </ul>
+        </div>`
+    },
+    scale: {
+        title: "Scale di Valutazione",
+        html: `
+        <h3>Scale di Valutazione Clinica</h3>
+        <p class="subtitle">Strumenti di scoring standardizzati</p>
+        <div class="proto-block">
+            <h5>GCS – Glasgow Coma Scale</h5>
+            <table>
+                <tr><th>Area</th><th>Risposta</th><th>Punti</th></tr>
+                <tr><td rowspan="4"><b>Occhi</b></td><td>Spontanea</td><td>4</td></tr>
+                <tr><td>A stimolo verbale</td><td>3</td></tr>
+                <tr><td>A dolore</td><td>2</td></tr>
+                <tr><td>Assente</td><td>1</td></tr>
+                <tr><td rowspan="5"><b>Verbale</b></td><td>Orientato</td><td>5</td></tr>
+                <tr><td>Confuso</td><td>4</td></tr>
+                <tr><td>Parole inappropriate</td><td>3</td></tr>
+                <tr><td>Suoni incomprensibili</td><td>2</td></tr>
+                <tr><td>Assente</td><td>1</td></tr>
+                <tr><td rowspan="6"><b>Motoria</b></td><td>Obbedisce comandi</td><td>6</td></tr>
+                <tr><td>Localizza dolore</td><td>5</td></tr>
+                <tr><td>Retrae</td><td>4</td></tr>
+                <tr><td>Flessione anomala</td><td>3</td></tr>
+                <tr><td>Estensione anomala</td><td>2</td></tr>
+                <tr><td>Assente</td><td>1</td></tr>
+            </table>
+            <p style="margin-top:8px">Min 3 – Max 15 | &lt;9 = Grave | &lt;8 = Gestione vie aeree avanzata</p>
+        </div>
+        <div class="proto-block green">
+            <h5>AVPU</h5>
+            <ul>
+                <li><b>A</b>lert – sveglio e orientato</li>
+                <li><b>V</b>oice – risponde alla voce</li>
+                <li><b>P</b>ain – risponde al dolore</li>
+                <li><b>U</b>nresponsive – nessuna risposta</li>
+            </ul>
+            <p>V/P corrisponde circa a GCS &lt;13 / GCS 8</p>
+        </div>
+        <div class="proto-block blue">
+            <h5>Cincinnati Prehospital Stroke Scale</h5>
+            <ul>
+                <li><b>Asimmetria facciale</b>: "Mostrami i denti" – un lato cade?</li>
+                <li><b>Caduta braccio</b>: occhi chiusi, braccia alzate 10 sec – uno cade?</li>
+                <li><b>Anomalia eloquio</b>: "il cielo è azzurro" – disartria/afasia?</li>
+            </ul>
+            <p>1 anomalia = 72% probabilità ictus | 3 anomalie = 85%</p>
+        </div>
+        <div class="proto-block amber">
+            <h5>Pupille – P.I.R.</h5>
+            <ul>
+                <li><b>P</b>upille <b>I</b>socoriche <b>R</b>eattive = normale</li>
+                <li>Midriasi bilaterale fissa: danno cerebrale grave, farmaci</li>
+                <li>Miosi bilaterale: oppioidi, danno pontino</li>
+                <li>Anisocoria: lesione cerebrale unilaterale (erniazione)</li>
+            </ul>
+        </div>`
     }
+};
 
-    function openDetail(id) {
-        document.getElementById('detail-content').innerHTML = manualDB[id];
-        document.getElementById('detail-layer').classList.add('open');
-    }
+function openDetail(id) {
+    const data = manualDB[id];
+    if(!data) return;
+    document.getElementById('detail-title').textContent = data.title;
+    document.getElementById('detail-content').innerHTML = data.html;
+    document.getElementById('detail-layer').classList.add('open');
+}
+function closeDetail() { document.getElementById('detail-layer').classList.remove('open'); }
 
-    function closeDetail() { document.getElementById('detail-layer').classList.remove('open'); }
+// ── AI CHATBOT ──
+let chatHistory = [];
 
-    function handleChat() {
-        const input = document.getElementById('user-input');
-        const win = document.getElementById('chat-window');
-        const val = input.value.toLowerCase();
-        if(!val) return;
+async function handleChat() {
+    const input = document.getElementById('user-input');
+    const win = document.getElementById('chat-window');
+    const val = input.value.trim();
+    if(!val) return;
 
-        win.innerHTML += `<div class="msg user">${input.value}</div>`;
-        let reply = "<b>Database:</b> Informazione non trovata. Prova termini come: DAE, BLSD, KED, GCS, ICTUS, START, PARTO.";
-        
-        for (let item of engineDB) {
-            if (item.tags.some(t => val.includes(t))) { reply = item.text; break; }
-        }
+    // Render user message
+    win.innerHTML += `<div class="msg user">${escapeHtml(val)}</div>`;
+    input.value = "";
+    win.scrollTop = win.scrollHeight;
 
-        setTimeout(() => {
-            win.innerHTML += `<div class="msg bot">${reply}</div>`;
-            win.scrollTop = win.scrollHeight;
-        }, 300);
-        input.value = "";
-    }
+    // Show typing indicator
+    const typingId = 'typing-' + Date.now();
+    win.innerHTML += `<div class="msg typing" id="${typingId}"><div class="dot-flashing"><span></span><span></span><span></span></div></div>`;
+    win.scrollTop = win.scrollHeight;
 
-    // QUIZ LOGIC
-    let sc = 0; let cur = 0;
-    const questions = [
-        { q: "Rapporto RCP Pediatrico (2 soccorritori)?", a: ["30:2", "15:2", "5:1"], c: 1 },
-        { q: "Laccio Verde del KED?", a: ["Inferiore", "Medio", "Superiore"], c: 2 },
-        { q: "Valutazione 'D' dell'ABCDE?", a: ["Diuresi", "Deficit Neurologico", "Dinamica"], c: 1 },
-        { q: "GCS minimo possibile?", a: ["0", "1", "3"], c: 2 }
-    ];
+    chatHistory.push({ role: "user", content: val });
 
-    function initQuiz() {
-        if(cur >= questions.length) {
-            document.getElementById('q-text').innerText = `Risultato: ${sc}/${questions.length}`;
-            document.getElementById('q-box').innerHTML = `<button class="btn btn-dark w-100" onclick="location.reload()">Reset</button>`;
-            return;
-        }
-        const q = questions[cur];
-        document.getElementById('q-text').innerText = q.q;
-        document.getElementById('q-box').innerHTML = "";
-        q.a.forEach((o, i) => {
-            const btn = document.createElement('button');
-            btn.className = "btn btn-outline-danger p-3 fw-bold";
-            btn.innerText = o;
-            btn.onclick = () => { if(i === q.c) sc++; cur++; initQuiz(); };
-            document.getElementById('q-box').appendChild(btn);
+    try {
+        const response = await fetch("https://api.anthropic.com/v1/messages", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                model: "claude-sonnet-4-20250514",
+                max_tokens: 1000,
+                system: `Sei un assistente esperto di emergenza sanitaria preospedaliera per soccorritori e operatori del 118 in Italia. 
+Rispondi SEMPRE in italiano. 
+Fornisci risposte precise, clinicamente accurate e pratiche su: protocolli BLSD/PBLSD (linee guida ERC 2021), ABCDE, triage START, KED, scale cliniche (GCS, AVPU, FAST, Cincinnati), farmaci di emergenza, patologie acute.
+Struttura la risposta con intestazioni chiare in grassetto quando appropriato.
+Usa elenchi puntati per le sequenze operative.
+Includi sempre valori numerici specifici (frequenze, dosi, soglie).
+Se la domanda non riguarda l'emergenza sanitaria, reindirizza gentilmente verso l'ambito di competenza.
+Non aggiungere disclaimer medico-legali eccessivi: sei un supporto operativo per personale formato.`,
+                messages: chatHistory
+            })
         });
+
+        const data = await response.json();
+        const reply = data.content?.map(b => b.text || "").join("") || "Errore nella risposta.";
+
+        chatHistory.push({ role: "assistant", content: reply });
+
+        // Remove typing indicator
+        document.getElementById(typingId)?.remove();
+
+        // Format and render reply
+        const formatted = formatBotMessage(reply);
+        win.innerHTML += `<div class="msg bot">${formatted}</div>`;
+        win.scrollTop = win.scrollHeight;
+
+    } catch(e) {
+        document.getElementById(typingId)?.remove();
+        win.innerHTML += `<div class="msg bot">⚠️ Errore di connessione. Verifica la tua API key e la connessione internet.</div>`;
+        win.scrollTop = win.scrollHeight;
     }
+}
+
+function sendQuick(text) {
+    document.getElementById('user-input').value = text;
+    handleChat();
+}
+
+function formatBotMessage(text) {
+    return text
+        .replace(/\*\*(.+?)\*\*/g, '<b>$1</b>')
+        .replace(/\*(.+?)\*/g, '<i>$1</i>')
+        .replace(/^#{1,3}\s(.+)$/gm, '<b style="font-size:1rem">$1</b>')
+        .replace(/^[-•]\s(.+)$/gm, '• $1')
+        .replace(/\n\n/g, '<br><br>')
+        .replace(/\n/g, '<br>');
+}
+
+function escapeHtml(t) {
+    return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// ── QUIZ ──
+const allQuestions = [
+    { q: "Rapporto RCP adulto?", a: ["15:2","30:2","20:2","5:1"], c: 1, exp: "Il rapporto standard per RCP adulto è 30 compressioni : 2 ventilazioni, con frequenza 100-120/min." },
+    { q: "Rapporto RCP pediatrico con 2 soccorritori BLS?", a: ["30:2","5:2","15:2","10:1"], c: 2, exp: "Con 2 soccorritori professionisti in ambito pediatrico il rapporto è 15:2. Con 1 soccorriero o laico: 30:2." },
+    { q: "Primo laccio da stringere nel KED?", a: ["Verde (superiore)","Giallo (medio)","Rosso (inferiore)","Inguinale"], c: 1, exp: "Sequenza KED: prima Giallo (medio), poi Rosso (inferiore), poi Verde (superiore). Acronimo: G.R.V." },
+    { q: "D nell'ABCDE valuta:", a: ["Diuresi","Dinamica del trauma","Deficit neurologico","Decubito"], c: 2, exp: "D = Disability: valuta GCS, AVPU, pupille (P.I.R.) e glicemia capillare." },
+    { q: "GCS minimo possibile?", a: ["0","1","3","5"], c: 2, exp: "Il GCS ha un minimo di 3 (1+1+1) perché ogni area ha punteggio minimo 1, non 0." },
+    { q: "SpO₂ target per paziente adulto normale in ossigenoterapia?", a: [">88%",">94%",">80%",">99%"], c: 1, exp: "Target SpO₂ >94% per paziente adulto. Per BPCO: 88-92% (rischio depressione ipossica del respiro)." },
+    { q: "Profondità compressioni RCP adulto?", a: ["2-3 cm","3-4 cm","5-6 cm","7-8 cm"], c: 2, exp: "Le compressioni toraciche nell'adulto devono essere di 5-6 cm (non oltre 6 cm per evitare fratture)." },
+    { q: "Nella scala APGAR quale punteggio indica normalità?", a: ["0-3","4-6","7-10","11-15"], c: 2, exp: "Punteggio APGAR: 7-10 = normale; 4-6 = depressione moderata; <4 = grave, rianimazione necessaria." },
+    { q: "Nel triage START, chi ottiene il codice VERDE?", a: ["Non respira","FR>30/min","Deambula autonomamente","Non segue comandi"], c: 2, exp: "Nel START: chi cammina autonomamente riceve subito il codice Verde (ferite lievi, autosufficienti)." },
+    { q: "Dove si posiziona il laccio emostatico?", a: ["Direttamente sulla ferita","5-7 cm sopra la ferita","5-7 cm sotto la ferita","Sul polso"], c: 1, exp: "Il laccio emostatico va posizionato 5-7 cm prossimalmente (sopra) la ferita, stringendo fino ad arresto del sanguinamento." },
+    { q: "Quale presidio per O₂ garantisce FiO₂ ~90-95%?", a: ["Occhialini nasali","Maschera semplice","Maschera Venturi","Maschera con reservoir"], c: 3, exp: "La maschera con reservoir (non rebreathing mask) a 10-15 L/min garantisce FiO₂ ~90-95%." },
+    { q: "FAST nell'ictus: cosa significa la 'T'?", a: ["Temperatura","Tipo di dolore","Tempo di insorgenza","Terapia"], c: 2, exp: "T = Time (Tempo): registrare l'ora esatta di insorgenza dei sintomi. La finestra terapeutica per trombolisi è 4.5 ore." },
+    { q: "In anafilassi, dove si inietta l'adrenalina?", a: ["Endovena braccio","Intramuscolo coscia anterolaterale","Sottocute addome","Intracardiaco"], c: 1, exp: "Adrenalina IM nella faccia anterolaterale della coscia (muscolo vasto laterale): assorbimento più rapido e affidabile." },
+    { q: "Quante ventilazioni iniziali nel PBLSD del lattante?", a: ["0 (inizia subito 30:2)","2","5","10"], c: 2, exp: "Nel PBLSD si inizia con 5 ventilazioni di soccorso, poi si procede con RCP 30:2 o 15:2." },
+    { q: "Cosa valuta la lettera 'B' dell'ABCDE?", a: ["Battito cardiaco","Breathing (respiro)","Bleeding","Bilancio idrico"], c: 1, exp: "B = Breathing: valutazione del respiro con metodo OPACS (Osserva, Palpa, Ascolta, Conta, Satura)." }
+];
+
+let quizState = { questions: [], cur: 0, score: 0, answered: false };
+
+function renderQuizStart() {
+    document.getElementById('quiz-container').innerHTML = `
+        <div class="quiz-card">
+            <div class="quiz-start">
+                <div class="big-icon">✏️</div>
+                <h3>Simulazione d'Esame</h3>
+                <p>10 domande casuali su protocolli, scale, manovre e farmaci di emergenza.</p>
+                <button class="btn-start" onclick="initQuiz()">Inizia il Test</button>
+            </div>
+        </div>`;
+}
+
+function initQuiz() {
+    const shuffled = [...allQuestions].sort(() => Math.random() - 0.5).slice(0, 10);
+    quizState = { questions: shuffled, cur: 0, score: 0, answered: false };
+    renderQuestion();
+}
+
+function renderQuestion() {
+    const { questions, cur, score } = quizState;
+    if(cur >= questions.length) { renderResult(); return; }
+    const q = questions[cur];
+    const progress = (cur / questions.length) * 100;
+    document.getElementById('quiz-container').innerHTML = `
+        <div class="quiz-card">
+            <div class="quiz-meta">Domanda ${cur+1} / ${questions.length}</div>
+            <div class="quiz-progress"><div class="quiz-progress-fill" style="width:${progress}%"></div></div>
+            <div class="quiz-question">${q.q}</div>
+            <div class="quiz-options" id="quiz-opts">
+                ${q.a.map((opt, i) => `<button class="quiz-btn" id="qb-${i}" onclick="answerQuiz(${i})">${opt}</button>`).join('')}
+            </div>
+            <div class="quiz-explanation" id="quiz-exp">${q.exp}</div>
+            <button class="quiz-next" id="quiz-next" onclick="nextQuestion()">Prossima →</button>
+        </div>`;
+}
+
+function answerQuiz(i) {
+    if(quizState.answered) return;
+    quizState.answered = true;
+    const q = quizState.questions[quizState.cur];
+    const btns = document.querySelectorAll('.quiz-btn');
+    btns.forEach((b, idx) => {
+        b.onclick = null;
+        if(idx === q.c) b.classList.add('correct');
+        else if(idx === i) b.classList.add('wrong');
+    });
+    if(i === q.c) quizState.score++;
+    document.getElementById('quiz-exp').style.display = 'block';
+    document.getElementById('quiz-next').style.display = 'block';
+}
+
+function nextQuestion() {
+    quizState.cur++;
+    quizState.answered = false;
+    renderQuestion();
+}
+
+function renderResult() {
+    const { score, questions } = quizState;
+    const pct = Math.round(score / questions.length * 100);
+    const emoji = pct >= 80 ? '🏆' : pct >= 60 ? '✅' : '📚';
+    const msg = pct >= 80 ? 'Eccellente preparazione!' : pct >= 60 ? 'Buon livello, continua a studiare.' : 'Ripassare i protocolli fondamentali.';
+    document.getElementById('quiz-container').innerHTML = `
+        <div class="quiz-card">
+            <div class="quiz-score">
+                <div style="font-size:3rem">${emoji}</div>
+                <div class="score-num">${score}/${questions.length}</div>
+                <p style="font-size:1rem;font-weight:700;margin-top:8px">${pct}%</p>
+                <p>${msg}</p>
+                <button class="btn-start" style="margin-top:20px" onclick="initQuiz()">Riprova</button>
+            </div>
+        </div>`;
+}
 </script>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

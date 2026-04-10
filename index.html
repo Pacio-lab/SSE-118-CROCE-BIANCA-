@@ -36,7 +36,7 @@
         font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
         background: var(--bg);
         color: var(--text);
-        padding-bottom: 83px;
+        padding-bottom: 100px;
         -webkit-font-smoothing: antialiased;
         -webkit-tap-highlight-color: transparent; /* FIX: rimuove flash grigio su tap iOS */
         overscroll-behavior: none;
@@ -74,7 +74,7 @@
     }
 
     /* ── VIEWS ── */
-    .view { padding: 16px 20px 24px; }
+    .view { padding: 16px 20px 40px; }
     .d-none { display: none !important; }
     .section-title {
         font-size: 10.5px; font-weight: 700; color: var(--muted);
@@ -121,7 +121,7 @@
     /* ── CHATBOT ── */
     /* FIX: altezza dinamica con dvh (supporto moderno) con fallback vh */
     #chat-window {
-        height: calc(100dvh - 280px);
+        height: calc(100dvh - 320px);
         min-height: 200px; /* FIX: non collassa su schermi piccoli */
         overflow-y: auto;
         -webkit-overflow-scrolling: touch; /* FIX: scroll fluido su iOS */

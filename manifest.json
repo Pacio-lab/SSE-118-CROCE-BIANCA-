@@ -1,0 +1,27 @@
+{
+  "name": "RescuePro Master",
+  "short_name": "RescuePro",
+  "description": "Protocolli di emergenza sanitaria preospedaliera per soccorritori",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#c0392b",
+  "theme_color": "#c0392b",
+  "lang": "it",
+  "icons": [
+    {
+      "src": "./IMG_4138.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./IMG_4138.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["medical", "education"],
+  "screenshots": []
+}
